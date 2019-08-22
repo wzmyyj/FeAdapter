@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="item"
+            type="top.wzmyyj.feadapter.model.XXFootModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="#0077ff"
+        android:layout_height="80dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@{item.txt}" />
+
+    </LinearLayout>
+</layout>

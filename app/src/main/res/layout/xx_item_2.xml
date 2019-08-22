@@ -5,13 +5,13 @@
 
         <variable
             name="item"
-            type="top.wzmyyj.feadapter.model.XXHeadModel" />
+            type="top.wzmyyj.feadapter.model.XXItem2Model" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:background="#66aa00"
-        android:layout_height="150dp">
+        android:background="#00bbff"
+        android:layout_height="80dp">
 
         <TextView
             android:layout_width="match_parent"

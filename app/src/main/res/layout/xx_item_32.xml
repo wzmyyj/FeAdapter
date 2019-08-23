@@ -10,7 +10,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:background="#ffbb00"
+        android:background="#ffaa00"
         android:layout_height="100dp">
 
         <TextView

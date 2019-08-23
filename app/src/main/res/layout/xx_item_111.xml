@@ -10,8 +10,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:background="#ff99ff"
-        android:layout_height="100dp">
+        android:background="#8899ff"
+        android:layout_height="80dp">
 
         <TextView
             android:layout_width="match_parent"

@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
 
         val foot = XXFootModel()
-        foot.txt = "这是头部！"
+        foot.txt = "这是底部！"
 
 
         val empty = XXEmptyModel()
@@ -79,10 +79,8 @@ class MainActivity : AppCompatActivity() {
         list.add(head)
         list.add(item1)
         list.add(item2)
-        list.add(item1)
         list.add(item3)
         list.add(item4)
-        list.add(item2)
         list.add(empty)
         list.add(foot)
 

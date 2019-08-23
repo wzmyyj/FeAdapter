@@ -1,7 +1,5 @@
 package top.wzmyyj.feadapter.model
 
-import top.wzmyyj.feadapter.base.IModelTree
-
 /**
  * Created on 2019/08/22.
  *

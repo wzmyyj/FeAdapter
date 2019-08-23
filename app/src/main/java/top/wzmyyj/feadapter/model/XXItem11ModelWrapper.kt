@@ -11,18 +11,19 @@ import top.wzmyyj.feadapter.base.IModelTree
  */
 class XXItem11ModelWrapper(
 
-        var txt: String = "",
         var item111: XXItem111Model? = null,
         var item112: XXItem112Model? = null
 
-) : IXXModelWrapper() {
-    override fun addChild(list: MutableList<IXXModelType>) {
-        item111?.let {
-            list.add(it)
-        }
-        item112?.let {
-            list.add(it)
+) : IXXModelType {
+
+    override fun getChildren(): List<IXXModelType>? {
+        return ArrayList<IXXModelType>().also { list ->
+            item111?.let {
+                list.add(it)
+            }
+            item112?.let {
+                list.add(it)
+            }
         }
     }
-
 }

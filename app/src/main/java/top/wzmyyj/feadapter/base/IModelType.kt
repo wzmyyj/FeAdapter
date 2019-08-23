@@ -8,5 +8,5 @@ package top.wzmyyj.feadapter.base
  * @since 1.0
  */
 interface IModelType {
-    fun getViewType(): Int
+    fun getViewType(): Int = -0x10000
 }

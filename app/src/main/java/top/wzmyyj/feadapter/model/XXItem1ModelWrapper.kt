@@ -15,16 +15,18 @@ class XXItem1ModelWrapper(
         var item12List: List<XXItem12Model>? = null,
         var item13: XXItem13Model? = null
 
-) : IXXModelWrapper() {
-    override fun addChild(list: MutableList<IXXModelType>) {
-        item11?.let {
-            list.add(it)
-        }
-        item12List?.let {
-            list.addAll(it)
-        }
-        item13?.let {
-            list.add(it)
+) : IXXModelType {
+    override fun getChildren(): List<IXXModelType>? {
+        return ArrayList<IXXModelType>().also { list ->
+            item11?.let {
+                list.add(it)
+            }
+            item12List?.let {
+                list.addAll(it)
+            }
+            item13?.let {
+                list.add(it)
+            }
         }
     }
 

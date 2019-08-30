@@ -1,5 +1,7 @@
 package top.wzmyyj.feadapter.model
 
+import top.wzmyyj.feadapter.R
+
 /**
  * Created on 2019/08/22.
  *
@@ -9,11 +11,13 @@ package top.wzmyyj.feadapter.model
  */
 class XXItem4Model(
 
-    var txt: String = ""
+        var txt: String = "",
+
+        val list: MutableList<IYYModelType> = ArrayList()
 
 ) : IXXModelType {
 
     override fun getViewType(): Int {
-        return IXXModelType.VIEW_TYPE_ITEM_4
+        return R.layout.xx_item_4
     }
 }

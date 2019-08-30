@@ -1,5 +1,7 @@
 package top.wzmyyj.feadapter.model
 
+import top.wzmyyj.feadapter.R
+
 /**
  * Created on 2019/08/22.
  *
@@ -14,6 +16,10 @@ class XXHeadModel(
 ) : IXXModelType {
 
     override fun getViewType(): Int {
-        return IXXModelType.VIEW_TYPE_HEAD
+        return R.layout.xx_head
+    }
+
+    interface OnItemListener {
+        fun onHead(model: XXHeadModel)
     }
 }

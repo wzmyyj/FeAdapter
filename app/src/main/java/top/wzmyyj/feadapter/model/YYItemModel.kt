@@ -3,23 +3,21 @@ package top.wzmyyj.feadapter.model
 import top.wzmyyj.feadapter.R
 
 /**
- * Created on 2019/08/22.
+ * Created on 2019/08/30.
  *
  * @author feling
  * @version 1.0
  * @since 1.0
  */
-class XXEmptyModel(
-
-    var txt: String = ""
-
-) : IXXModelType {
-
+class YYItemModel : IYYModelType {
     override fun getViewType(): Int {
-        return R.layout.xx_empty
+        return R.layout.yy_item
     }
 
+    var txt: String = "YYY"
+
+
     interface OnItemListener {
-        fun onEmpty(model: XXEmptyModel)
+        fun onYY(model: YYItemModel)
     }
 }

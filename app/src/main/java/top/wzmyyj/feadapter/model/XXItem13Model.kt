@@ -1,5 +1,7 @@
 package top.wzmyyj.feadapter.model
 
+import top.wzmyyj.feadapter.R
+
 /**
  * Created on 2019/08/22.
  *
@@ -14,6 +16,6 @@ class XXItem13Model(
 ) : IXXModelType {
 
     override fun getViewType(): Int {
-        return IXXModelType.VIEW_TYPE_ITEM_1_3
+        return R.layout.xx_item_13
     }
 }

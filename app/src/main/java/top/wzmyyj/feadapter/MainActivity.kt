@@ -2,6 +2,7 @@ package top.wzmyyj.feadapter
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import top.wzmyyj.feadapter.adapter.XXAdapter
 import top.wzmyyj.feadapter.model.*
@@ -13,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val recyclerView: RecyclerView = findViewById(R.id.rv)
-        val xxAdapter = XXAdapter()
+        val xxAdapter = XXAdapter(listener)
         recyclerView.adapter = xxAdapter
 
 
@@ -74,6 +75,14 @@ class MainActivity : AppCompatActivity() {
         val item4 = XXItem4Model()
         item4.txt = "这是item4！"
 
+        item4.list.clear()
+        item4.list.add(YYItemModel())
+        item4.list.add(YYItemModel())
+        item4.list.add(YYItemModel())
+        item4.list.add(YYItemModel())
+        item4.list.add(YYItemModel())
+        item4.list.add(YYItemModel())
+
 
         val list = ArrayList<IXXModelType>()
         list.add(head)
@@ -85,6 +94,22 @@ class MainActivity : AppCompatActivity() {
         list.add(foot)
 
         xxAdapter.setData(list)
+
+    }
+
+
+    private val listener = object : XXAdapter.OnAdapterListener {
+        override fun onYY(model: YYItemModel) {
+            Toast.makeText(application, model.txt, Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onHead(model: XXHeadModel) {
+            Toast.makeText(application, model.txt, Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onEmpty(model: XXEmptyModel) {
+            Toast.makeText(application, model.txt, Toast.LENGTH_SHORT).show()
+        }
 
     }
 }

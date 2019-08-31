@@ -16,17 +16,17 @@ import androidx.recyclerview.widget.RecyclerView
 abstract class BaseListAdapter<M : IModelType> : RecyclerView.Adapter<BaseListAdapter.ViewHolder>() {
     private val items: MutableList<M> = ArrayList()
 
-    private val ivdList: MutableList<IVD<M>> = ArrayList()
+    private val ivdManager: ItemViewDelegateManager<M> = ItemViewDelegateManager()
 
     class ViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        initIvdList(ivdList)
+        initIvdList(ivdManager)
         super.onAttachedToRecyclerView(recyclerView)
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        ivdList.clear()
+        ivdManager.clear()
         items.clear()
         super.onDetachedFromRecyclerView(recyclerView)
     }
@@ -36,8 +36,8 @@ abstract class BaseListAdapter<M : IModelType> : RecyclerView.Adapter<BaseListAd
 
     abstract fun onBindVHForAll(binding: ViewDataBinding, m: M)
 
-    protected open fun initIvdList(ivdList: MutableList<IVD<M>>) {
-        ivdList.add(object : IVD<M> {
+    protected open fun initIvdList(manager: ItemViewDelegateManager<M>) {
+        manager.addIvd(object : ItemViewDelegate<ViewDataBinding, M> {
             override fun isForViewType(viewType: Int): Boolean {
                 return true
             }
@@ -53,25 +53,18 @@ abstract class BaseListAdapter<M : IModelType> : RecyclerView.Adapter<BaseListAd
         })
     }
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = DataBindingUtil.inflate<ViewDataBinding>(
-                LayoutInflater.from(parent.context),
-                viewType, parent, false
+            LayoutInflater.from(parent.context),
+            viewType, parent, false
         )
-        ivdList.forEach { ivd ->
-            if (ivd.isForViewType(viewType)) {
-                ivd.onCreateVH(binding)
-            }
-        }
+        ivdManager.onCreateVH(viewType, binding)
         return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        ivdList.forEach { ivd ->
-            if (ivd.isForViewType(items[position].getViewType())) {
-                ivd.onBindVH(holder.binding, items[position])
-            }
-        }
+        ivdManager.onBindVH(items[position].getViewType(), holder.binding, items[position])
     }
 
 

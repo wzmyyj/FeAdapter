@@ -19,7 +19,7 @@ interface IModelTree<M : IModelTree<M>> : IModelType {
 
         private fun <M : IModelTree<M>> findLeafs(tree: M ,list: ArrayList<M>) {
             val childTreeList = tree.getChildren()
-            if (childTreeList == null || childTreeList.isEmpty()) {
+            if (childTreeList == null) {
                 list.add(tree)
                 return
             }

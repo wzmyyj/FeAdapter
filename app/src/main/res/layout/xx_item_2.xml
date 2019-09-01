@@ -5,7 +5,7 @@
 
         <variable
             name="item"
-            type="top.wzmyyj.feadapter.model.XXItem2Model" />
+            type="top.wzmyyj.feadapter.model.LinkGoodsModel" />
     </data>
 
     <LinearLayout

@@ -5,19 +5,25 @@
 
         <variable
             name="item"
-            type="top.wzmyyj.feadapter.model.LinkMeetingModel" />
+            type="top.wzmyyj.feadapter.model.MaterialTextModel" />
     </data>
 
-    <LinearLayout
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:background="#8877ff"
-        android:layout_height="100dp">
+        android:layout_height="60dp"
+        android:background="#f5f5f5"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:paddingBottom="10dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="#ffffff"
             android:gravity="center"
             android:text="@{item.txt}" />
 
-    </LinearLayout>
+    </FrameLayout>
+
 </layout>

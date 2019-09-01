@@ -5,19 +5,25 @@
 
         <variable
             name="item"
-            type="top.wzmyyj.feadapter.model.LinkMeetingModel" />
+            type="top.wzmyyj.feadapter.model.TrendEmptyModel" />
+
+        <variable
+            name="listener"
+            type="top.wzmyyj.feadapter.model.TrendEmptyModel.OnItemListener" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:background="#8877ff"
-        android:layout_height="100dp">
+        android:background="#eeeeee"
+        android:layout_height="300dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
+            android:onClick="@{()->listener.onEmpty(item)}"
             android:text="@{item.txt}" />
 
     </LinearLayout>
 </layout>
+

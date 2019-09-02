@@ -13,7 +13,7 @@ import androidx.databinding.ViewDataBinding
 interface ItemViewDelegate<DB : ViewDataBinding, M : IModelType> {
 
     /**
-     * viewType满足某添加后委托生效。
+     * viewType满足某添加后委托生效。使用时写跟 M 的 getViewType() 值相同。
      * @return viewType
      */
     fun getViewType(): Int

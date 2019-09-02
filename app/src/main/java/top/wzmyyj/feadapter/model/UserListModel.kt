@@ -13,7 +13,7 @@ class UserListModel(
 
         var txt: String = "",
 
-        val list: MutableList<IGoodsModelType> = ArrayList()
+        val list: MutableList<UserItemModel> = ArrayList()
 
 ) : IFeedModelType {
 

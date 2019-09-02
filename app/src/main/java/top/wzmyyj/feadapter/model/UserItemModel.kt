@@ -9,12 +9,12 @@ import top.wzmyyj.feadapter.R
  * @version 1.0
  * @since 1.0
  */
-class UserItemModel : IGoodsModelType {
+class UserItemModel : IUserModelType {
     override fun getViewType(): Int {
         return R.layout.user_item
     }
 
-    var txt: String = "YYY"
+    var txt: String = "用户"
 
 
     interface OnItemListener {

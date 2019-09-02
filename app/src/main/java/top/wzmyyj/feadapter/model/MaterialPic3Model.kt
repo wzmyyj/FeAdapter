@@ -11,11 +11,11 @@ import top.wzmyyj.feadapter.R
  */
 class MaterialPic3Model(
 
-    var txt: String = ""
+        var txt: String = ""
 
 ) : IFeedModelType {
 
     override fun getViewType(): Int {
-        return R.layout.xx_item_112
+        return R.layout.material_pic3
     }
 }

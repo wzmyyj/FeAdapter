@@ -16,6 +16,6 @@ class MaterialPic2Model(
 ) : IFeedModelType {
 
     override fun getViewType(): Int {
-        return R.layout.xx_item_111
+        return R.layout.material_pic2
     }
 }

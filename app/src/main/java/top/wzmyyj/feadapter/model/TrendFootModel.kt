@@ -11,7 +11,7 @@ import top.wzmyyj.feadapter.R
  */
 class TrendFootModel(
 
-    var txt: String = ""
+    var txt: String = "列表底部"
 
 ) : IFeedModelType {
 

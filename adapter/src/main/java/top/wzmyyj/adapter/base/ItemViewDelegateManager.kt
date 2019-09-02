@@ -47,7 +47,7 @@ class ItemViewDelegateManager<M : IModelType> {
      * @param ivd ItemViewDelegate
      */
     @Suppress("UNCHECKED_CAST")
-    fun <X : ViewDataBinding, Y : M> addIvd(ivd: ItemViewDelegate<X, Y>) {
+    fun <X : ViewDataBinding, Y : M> add(ivd: ItemViewDelegate<X, Y>) {
         ivdList.add(ivd as ItemViewDelegate<ViewDataBinding, M>)
     }
 

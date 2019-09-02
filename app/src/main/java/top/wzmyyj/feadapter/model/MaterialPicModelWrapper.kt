@@ -9,18 +9,18 @@ package top.wzmyyj.feadapter.model
  */
 class MaterialPicModelWrapper(
 
-        var item111: MaterialPic2Model? = null,
-        var item112: MaterialPic3Model? = null
+        var pic2List: List<MaterialPic2Model>? = null,
+        var pic3List: List<MaterialPic3Model>? = null
 
 ) : IFeedModelWrapper() {
 
     override fun setChildren(list: ArrayList<IFeedModelType>) {
 
-        item111?.let {
-            list.add(it)
+        pic2List?.let {
+            list.addAll(it)
         }
-        item112?.let {
-            list.add(it)
+        pic3List?.let {
+            list.addAll(it)
         }
     }
 }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import top.wzmyyj.feadapter.adapter.TrendAdapter
+import top.wzmyyj.feadapter.databinding.LinkGoodsBinding
 import top.wzmyyj.feadapter.model.*
 
 class MainActivity : AppCompatActivity() {
@@ -19,77 +20,66 @@ class MainActivity : AppCompatActivity() {
 
 
         val head = TrendHeadModel()
-        head.txt = "这是头部！"
-
-
         val foot = TrendFootModel()
-        foot.txt = "这是底部！"
-
-
         val empty = TrendEmptyModel()
-        empty.txt = "这是空数据！"
-
-        val item111 = MaterialPic2Model()
-        item111.txt = "这是item111！"
 
 
-        val item112 = MaterialPic3Model()
-        item112.txt = "这是item112！"
+        val publisher = MaterialPublisherModel()
+        val text = MaterialTextModel()
+        val pic = MaterialPicModelWrapper()
+        val link = MaterialLinkModelWrapper()
+        val bottom = MaterialBottomModel()
 
 
-        val item11 = MaterialPicModelWrapper()
-        item11.item111 = item111
-        item11.item112 = item112
+        val material = MaterialModelWrapper()
+        material.publisher = publisher
+        material.text = text
+        material.pic = pic
+        material.link = link
+        material.bottom = bottom
 
 
-        val item12 = LinkMeetingModel()
-        item12.txt = "这是item12！"
-        val item12s = LinkMeetingModel()
-        item12s.txt = "这也是item12！"
+        val pic2List = ArrayList<MaterialPic2Model>()
+        val pic2 = MaterialPic2Model()
+        pic2List.add(pic2)
+        pic2List.add(pic2)
 
-        val item12List = ArrayList<LinkMeetingModel>()
-        item12List.add(item12)
-        item12List.add(item12s)
+        //或者
+//        val pic3List = ArrayList<MaterialPic3Model>()
+//        val pic3 = MaterialPic3Model()
+//        pic3List.add(pic3)
+//        pic3List.add(pic3)
+//        pic3List.add(pic3)
 
-        val item13 = MaterialTextModel()
-        item13.txt = "这是item13！"
 
-        val item1 = MaterialModelWrapper()
-        item1.item11 = item11
-        item1.item12List = item12List
-        item1.item13 = item13
+        pic.pic2List = pic2List
 
-        val item2 = LinkGoodsModel()
-        item2.txt = "这是item2！"
+        val linkGoods = MaterialLinkGoodsModel()
+        link.linkGoods = linkGoods
 
-        val item31 = XXItem31Model()
-        item31.txt = "这是item31！"
+        //或者
+//        val linkMeeting = MaterialLinkMeetingModel()
+//        link.linkMeeting = linkMeeting
 
-        val item32 = XXItem32Model()
-        item32.txt = "这是item32！"
 
-        val item3 = XXItem3ModelWrapper()
-        item3.item31 = item31
-        item3.item32 = item32
+        val userList = UserListModel()
 
-        val item4 = UserListModel()
-        item4.txt = "这是item4！"
-
-        item4.list.clear()
-        item4.list.add(UserItemModel())
-        item4.list.add(UserItemModel())
-        item4.list.add(UserItemModel())
-        item4.list.add(UserItemModel())
-        item4.list.add(UserItemModel())
-        item4.list.add(UserItemModel())
-
+        val users = ArrayList<UserItemModel>()
+        users.add(UserItemModel())
+        users.add(UserItemModel())
+        users.add(UserItemModel())
+        users.add(UserItemModel())
+        users.add(UserItemModel())
+        users.add(UserItemModel())
+        userList.list.clear()
+        userList.list.addAll(users)
 
         val list = ArrayList<IFeedModelType>()
         list.add(head)
-        list.add(item1)
-        list.add(item2)
-        list.add(item3)
-        list.add(item4)
+        list.add(userList)
+        list.add(material)
+        list.add(material)
+        list.add(material)
         list.add(empty)
         list.add(foot)
 

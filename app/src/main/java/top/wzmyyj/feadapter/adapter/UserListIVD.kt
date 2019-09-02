@@ -2,7 +2,7 @@ package top.wzmyyj.feadapter.adapter
 
 import top.wzmyyj.feadapter.R
 import top.wzmyyj.adapter.base.ItemViewDelegate
-import top.wzmyyj.feadapter.databinding.XxItem4Binding
+import top.wzmyyj.feadapter.databinding.TrendUserListBinding
 import top.wzmyyj.feadapter.model.UserListModel
 
 /**
@@ -13,15 +13,15 @@ import top.wzmyyj.feadapter.model.UserListModel
  * @since 1.0
  */
 class UserListIVD(private val listener: UserAdapter.OnAdapterListener) :
-    ItemViewDelegate<XxItem4Binding, UserListModel> {
+    ItemViewDelegate<TrendUserListBinding, UserListModel> {
     override fun isForViewType(viewType: Int): Boolean {
         return viewType == R.layout.trend_user_list
     }
 
-    override fun onCreateVH(binding: XxItem4Binding) {
+    override fun onCreateVH(binding: TrendUserListBinding) {
     }
 
-    override fun onBindVH(binding: XxItem4Binding, m: UserListModel) {
+    override fun onBindVH(binding: TrendUserListBinding, m: UserListModel) {
         binding.rv4.adapter = yyAdapter
         yyAdapter.setData(m.list)
     }

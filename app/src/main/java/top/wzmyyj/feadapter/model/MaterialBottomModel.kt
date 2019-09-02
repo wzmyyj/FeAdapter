@@ -16,6 +16,6 @@ class MaterialBottomModel(
 ) : IFeedModelType {
 
     override fun getViewType(): Int {
-        return R.layout.trend_material_bottom
+        return R.layout.material_bottom
     }
 }

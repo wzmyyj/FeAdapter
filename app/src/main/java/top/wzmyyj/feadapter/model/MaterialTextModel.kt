@@ -11,11 +11,11 @@ import top.wzmyyj.feadapter.R
  */
 class MaterialTextModel(
 
-    var txt: String = ""
+    var txt: String = "文本内容: 哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈"
 
 ) : IFeedModelType {
 
     override fun getViewType(): Int {
-        return R.layout.trend_material_bottom
+        return R.layout.material_text
     }
 }

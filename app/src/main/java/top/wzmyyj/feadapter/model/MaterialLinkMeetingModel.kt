@@ -9,13 +9,13 @@ import top.wzmyyj.feadapter.R
  * @version 1.0
  * @since 1.0
  */
-class LinkMeetingModel(
+class MaterialLinkMeetingModel(
 
-    var txt: String = ""
+    var txt: String = "会场链接"
 
 ) : IFeedModelType {
 
     override fun getViewType(): Int {
-        return R.layout.xx_item_12
+        return R.layout.link_meeting
     }
 }

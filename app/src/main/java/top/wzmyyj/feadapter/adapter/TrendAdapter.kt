@@ -26,14 +26,14 @@ class TrendAdapter(private val listener: OnAdapterListener) : BaseTreeAdapter<IF
     }
 
 
-    override fun initIVDs(manager: ItemViewDelegateManager<IFeedModelType>) {
-        super.initIVDs(manager)
-        manager.addIvd(UserListIVD(listener))
+    override fun addDelegate(manager: ItemViewDelegateManager<IFeedModelType>) {
+        super.addDelegate(manager)
+        manager.add(UserListIVD(listener))
     }
 
 
     interface OnAdapterListener :
-        TrendHeadModel.OnItemListener,
-        TrendEmptyModel.OnItemListener,
-        UserAdapter.OnAdapterListener
+            TrendHeadModel.OnItemListener,
+            TrendEmptyModel.OnItemListener,
+            UserAdapter.OnAdapterListener
 }

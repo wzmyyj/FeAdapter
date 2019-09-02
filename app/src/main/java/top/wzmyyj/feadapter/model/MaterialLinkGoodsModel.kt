@@ -9,13 +9,13 @@ import top.wzmyyj.feadapter.R
  * @version 1.0
  * @since 1.0
  */
-class LinkGoodsModel(
+class MaterialLinkGoodsModel(
 
-    var txt: String = ""
+    var txt: String = "商品链接"
 
 ) : IFeedModelType {
 
     override fun getViewType(): Int {
-        return R.layout.xx_item_2
+        return R.layout.link_goods
     }
 }

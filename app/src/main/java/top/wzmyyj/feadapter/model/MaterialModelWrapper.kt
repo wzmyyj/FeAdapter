@@ -9,19 +9,27 @@ package top.wzmyyj.feadapter.model
  */
 class MaterialModelWrapper(
 
-        var item11: MaterialPicModelWrapper? = null,
-        var item12List: List<LinkMeetingModel>? = null,
-        var item13: MaterialTextModel? = null
+        var publisher: MaterialPublisherModel? = null,
+        var text: MaterialTextModel? = null,
+        var pic: MaterialPicModelWrapper? = null,
+        var link: MaterialLinkModelWrapper? = null,
+        var bottom: MaterialBottomModel? = null
 
 ) : IFeedModelWrapper() {
     override fun setChildren(list: ArrayList<IFeedModelType>) {
-        item11?.let {
+        publisher?.let {
             list.add(it)
         }
-        item12List?.let {
-            list.addAll(it)
+        text?.let {
+            list.add(it)
         }
-        item13?.let {
+        pic?.let {
+            list.add(it)
+        }
+        link?.let {
+            list.add(it)
+        }
+        bottom?.let {
             list.add(it)
         }
     }

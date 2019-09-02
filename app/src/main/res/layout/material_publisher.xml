@@ -5,19 +5,25 @@
 
         <variable
             name="item"
-            type="top.wzmyyj.feadapter.model.MaterialPic3Model" />
+            type="top.wzmyyj.feadapter.model.MaterialPublisherModel" />
     </data>
 
-    <LinearLayout
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:background="#8899ff"
-        android:layout_height="70dp">
+        android:layout_height="60dp"
+        android:background="#f5f5f5"
+        android:paddingStart="15dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="15dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="#ffffff"
             android:gravity="center"
             android:text="@{item.txt}" />
 
-    </LinearLayout>
+    </FrameLayout>
+
 </layout>

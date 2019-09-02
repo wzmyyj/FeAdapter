@@ -11,11 +11,11 @@ import top.wzmyyj.feadapter.R
  */
 class MaterialPublisherModel(
 
-    var txt: String = ""
+    var txt: String = "发布者，素材头部"
 
 ) : IFeedModelType {
 
     override fun getViewType(): Int {
-        return R.layout.trend_material_bottom
+        return R.layout.material_publisher
     }
 }

@@ -23,7 +23,7 @@ abstract class BaseListAdapter<M : IModelType> :
     class ViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        initIVDs(ivdManager)
+        addDelegate(ivdManager)
         super.onAttachedToRecyclerView(recyclerView)
     }
 
@@ -41,15 +41,15 @@ abstract class BaseListAdapter<M : IModelType> :
     /**
      * 初始化各种viewType处理委托。添加到Manager中。
      */
-    protected open fun initIVDs(manager: ItemViewDelegateManager<M>) {
-        manager.addIvd(mainIvd())
+    protected open fun addDelegate(manager: ItemViewDelegateManager<M>) {
+        manager.add(mainDelegate())
     }
 
 
     /**
      * 主的处理委托。对每种viewType都有效。
      */
-    private fun mainIvd(): ItemViewDelegate<ViewDataBinding, M> {
+    private fun mainDelegate(): ItemViewDelegate<ViewDataBinding, M> {
         return object : ItemViewDelegate<ViewDataBinding, M> {
             override fun isForViewType(viewType: Int): Boolean {
                 return true

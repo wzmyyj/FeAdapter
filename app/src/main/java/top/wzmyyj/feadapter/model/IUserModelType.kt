@@ -9,4 +9,4 @@ import top.wzmyyj.adapter.base.IModelType
  * @version 1.0
  * @since 1.0
  */
-interface IGoodsModelType : IModelType
+interface IUserModelType : IModelType

@@ -11,7 +11,7 @@ import top.wzmyyj.feadapter.R
  */
 class TrendEmptyModel(
 
-    var txt: String = ""
+    var txt: String = "空数据"
 
 ) : IFeedModelType {
 

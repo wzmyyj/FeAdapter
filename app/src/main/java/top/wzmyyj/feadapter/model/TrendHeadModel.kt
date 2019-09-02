@@ -11,7 +11,7 @@ import top.wzmyyj.feadapter.R
  */
 class TrendHeadModel(
 
-    var txt: String = ""
+    var txt: String = "列表头部"
 
 ) : IFeedModelType {
 

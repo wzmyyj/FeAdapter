@@ -51,7 +51,7 @@ abstract class BaseListAdapter<M : IModelType> :
      */
     private fun mainDelegate(): ItemViewDelegate<ViewDataBinding, M> {
         return object : ItemViewDelegate<ViewDataBinding, M> {
-            override fun isForViewType(viewType: Int): Boolean {
+            override fun filter(viewType: Int): Boolean {
                 return true
             }
 

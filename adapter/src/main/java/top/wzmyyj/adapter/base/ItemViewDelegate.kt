@@ -17,7 +17,7 @@ interface ItemViewDelegate<DB : ViewDataBinding, M : IModelType> {
      * @param viewType .
      * @return 是否生效。
      */
-    fun isForViewType(viewType: Int): Boolean
+    fun filter(viewType: Int): Boolean
 
     /**
      * 当创建ViewHolder时。做什么事。

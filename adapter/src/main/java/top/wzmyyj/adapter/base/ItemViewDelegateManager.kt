@@ -15,27 +15,27 @@ class ItemViewDelegateManager<M : IModelType> {
     private val ivdList: MutableList<ItemViewDelegate<ViewDataBinding, M>> = ArrayList()
 
     /**
-     * 当创建 ViewHolder时。isForViewType=true 的 ItemViewDelegate 响应执行 onCreateVH 方法。
+     * 当创建 ViewHolder时。filter=true 的 ItemViewDelegate 响应执行 onCreateVH 方法。
      * @param viewType viewType
      * @param binding ViewDataBinding
      */
     internal fun onCreateVH(viewType: Int, binding: ViewDataBinding) {
         ivdList.forEach { ivd ->
-            if (ivd.isForViewType(viewType)) {
+            if (ivd.filter(viewType)) {
                 ivd.onCreateVH(binding)
             }
         }
     }
 
     /**
-     * 当Bind ViewHolder时。isForViewType=true的 ItemViewDelegate 响应执行 onBindVH 方法。
+     * 当Bind ViewHolder时。filter=true的 ItemViewDelegate 响应执行 onBindVH 方法。
      * @param viewType viewType
      * @param binding ViewDataBinding
      * @param m model
      */
     internal fun onBindVH(viewType: Int, binding: ViewDataBinding, m: M) {
         ivdList.forEach { ivd ->
-            if (ivd.isForViewType(viewType)) {
+            if (ivd.filter(viewType)) {
                 ivd.onBindVH(binding, m)
             }
         }

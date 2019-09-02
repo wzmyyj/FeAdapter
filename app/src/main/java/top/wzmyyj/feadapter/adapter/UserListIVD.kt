@@ -14,7 +14,7 @@ import top.wzmyyj.feadapter.model.UserListModel
  */
 class UserListIVD(private val listener: UserAdapter.OnAdapterListener) :
     ItemViewDelegate<TrendUserListBinding, UserListModel> {
-    override fun isForViewType(viewType: Int): Boolean {
+    override fun filter(viewType: Int): Boolean {
         return viewType == R.layout.trend_user_list
     }
 

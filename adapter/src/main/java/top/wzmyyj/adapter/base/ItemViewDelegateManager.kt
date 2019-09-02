@@ -15,30 +15,33 @@ class ItemViewDelegateManager<M : IModelType> {
     private val ivdList: MutableList<ItemViewDelegate<ViewDataBinding, M>> = ArrayList()
 
     /**
-     * 当创建 ViewHolder时。getViewType=true 的 ItemViewDelegate 响应执行 onCreateVH 方法。
+     * 当创建 ViewHolder时。getViewType=viewType 的 ItemViewDelegate 响应执行 onCreateVH 方法。
      * @param viewType viewType
      * @param binding ViewDataBinding
      */
     internal fun onCreateVH(viewType: Int, binding: ViewDataBinding) {
-        ivdList.forEach { ivd ->
-            if (ivd.getViewType() == viewType) {
-                ivd.onCreateVH(binding)
-            }
-        }
+        ivdList
+                .filter { ivd ->
+                    ivd.getViewType() == viewType
+                }
+                .forEach { ivd ->
+                    ivd.onCreateVH(binding)
+                }
     }
 
     /**
-     * 当Bind ViewHolder时。getViewType=true的 ItemViewDelegate 响应执行 onBindVH 方法。
+     * 当Bind ViewHolder时。getViewType=viewType的 ItemViewDelegate 响应执行 onBindVH 方法。
      * @param viewType viewType
      * @param binding ViewDataBinding
      * @param m model
      */
     internal fun onBindVH(viewType: Int, binding: ViewDataBinding, m: M) {
-        ivdList.forEach { ivd ->
-            if (ivd.getViewType() == viewType) {
-                ivd.onBindVH(binding, m)
-            }
-        }
+        ivdList
+                .filter { ivd ->
+                    ivd.getViewType() == viewType
+                }.forEach { ivd ->
+                    ivd.onBindVH(binding, m)
+                }
     }
 
     /**

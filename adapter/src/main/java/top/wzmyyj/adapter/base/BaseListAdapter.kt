@@ -14,11 +14,11 @@ import androidx.recyclerview.widget.RecyclerView
  * @since 1.0
  */
 abstract class BaseListAdapter<M : IModelType> :
-    RecyclerView.Adapter<BaseListAdapter.ViewHolder>() {
+        RecyclerView.Adapter<BaseListAdapter.ViewHolder>() {
     private val items: MutableList<M> = ArrayList()
 
     private val ivdManager: ItemViewDelegateManager<M> =
-        ItemViewDelegateManager()
+            ItemViewDelegateManager()
 
     class ViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -42,41 +42,21 @@ abstract class BaseListAdapter<M : IModelType> :
      * 初始化各种viewType处理委托。添加到Manager中。
      */
     protected open fun addDelegate(manager: ItemViewDelegateManager<M>) {
-        manager.add(mainDelegate())
-    }
-
-
-    /**
-     * 主的处理委托。对每种viewType都有效。
-     */
-    private fun mainDelegate(): ItemViewDelegate<ViewDataBinding, M> {
-        return object : ItemViewDelegate<ViewDataBinding, M> {
-            override fun filter(viewType: Int): Boolean {
-                return true
-            }
-
-            override fun onCreateVH(binding: ViewDataBinding) {
-                onCreateVHForAll(binding)
-            }
-
-            override fun onBindVH(binding: ViewDataBinding, m: M) {
-                onBindVHForAll(binding, m)
-            }
-
-        }
     }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = DataBindingUtil.inflate<ViewDataBinding>(
-            LayoutInflater.from(parent.context),
-            viewType, parent, false
+                LayoutInflater.from(parent.context),
+                viewType, parent, false
         )
+        onCreateVHForAll(binding)
         ivdManager.onCreateVH(viewType, binding)
         return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        onBindVHForAll(holder.binding, items[position])
         ivdManager.onBindVH(items[position].getViewType(), holder.binding, items[position])
     }
 

@@ -19,9 +19,11 @@ class UserListIVD(private val listener: UserAdapter.OnAdapterListener) :
         return R.layout.trend_user_list
     }
 
+    override fun onCreateVH(binding: TrendUserListBinding) {
+        binding.rv4.adapter = yyAdapter
+    }
 
     override fun onBindVH(binding: TrendUserListBinding, m: UserListModel) {
-        binding.rv4.adapter = yyAdapter
         yyAdapter.setData(m.list)
     }
 

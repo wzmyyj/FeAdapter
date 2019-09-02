@@ -22,16 +22,12 @@ interface ItemViewDelegate<DB : ViewDataBinding, M : IModelType> {
      * 当创建ViewHolder时。做什么事。
      * @param binding ViewDataBinding
      */
-    fun onCreateVH(binding: DB) {
-
-    }
+    fun onCreateVH(binding: DB)
 
     /**
      * 当Bind ViewHolder时。做什么事。
      * @param binding ViewDataBinding
      * @param m 具体的Model。
      */
-    fun onBindVH(binding: DB, m: M) {
-
-    }
+    fun onBindVH(binding: DB, m: M)
 }

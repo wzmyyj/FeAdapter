@@ -14,7 +14,7 @@ interface ItemViewDelegate<DB : ViewDataBinding, M : IModelType> {
 
     /**
      * viewType满足某添加后委托生效。
-     * @return viewType。
+     * @return viewType
      */
     fun getViewType(): Int
 

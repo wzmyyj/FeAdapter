@@ -16,10 +16,11 @@ class ItemViewDelegateManager<M : IModelType> {
 
     /**
      * 当创建 ViewHolder时。getViewType=viewType 的 ItemViewDelegate 响应执行 onCreateVH 方法。
-     * @param viewType viewType
      * @param binding ViewDataBinding
+     * @param viewType viewType
      */
-    internal fun onCreateVH(viewType: Int, binding: ViewDataBinding) {
+    internal fun onCreateVH(binding: ViewDataBinding, viewType: Int) {
+        if (ivdList.isEmpty()) return
         ivdList
                 .filter { ivd ->
                     ivd.getViewType() == viewType
@@ -31,14 +32,14 @@ class ItemViewDelegateManager<M : IModelType> {
 
     /**
      * 当Bind ViewHolder时。getViewType=viewType 的 ItemViewDelegate 响应执行 onBindVH 方法。
-     * @param viewType viewType
      * @param binding ViewDataBinding
      * @param m model
      */
-    internal fun onBindVH(viewType: Int, binding: ViewDataBinding, m: M) {
+    internal fun onBindVH(binding: ViewDataBinding, m: M) {
+        if (ivdList.isEmpty()) return
         ivdList
                 .filter { ivd ->
-                    ivd.getViewType() == viewType
+                    ivd.getViewType() == m.getViewType()
                 }.forEach { ivd ->
                     ivd.onBindVH(binding, m)
                 }

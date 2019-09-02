@@ -2,6 +2,7 @@ package top.wzmyyj.feadapter.adapter
 
 import top.wzmyyj.feadapter.R
 import top.wzmyyj.adapter.base.ItemViewDelegate
+import top.wzmyyj.adapter.base.SingleItemViewDelegate
 import top.wzmyyj.feadapter.databinding.TrendUserListBinding
 import top.wzmyyj.feadapter.model.UserListModel
 
@@ -13,9 +14,10 @@ import top.wzmyyj.feadapter.model.UserListModel
  * @since 1.0
  */
 class UserListIVD(private val listener: UserAdapter.OnAdapterListener) :
-    ItemViewDelegate<TrendUserListBinding, UserListModel> {
-    override fun filter(viewType: Int): Boolean {
-        return viewType == R.layout.trend_user_list
+        SingleItemViewDelegate<TrendUserListBinding, UserListModel>() {
+
+    override fun getViewType(): Int {
+        return R.layout.trend_user_list
     }
 
     override fun onCreateVH(binding: TrendUserListBinding) {

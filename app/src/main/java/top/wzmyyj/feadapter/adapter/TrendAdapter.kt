@@ -22,7 +22,6 @@ class TrendAdapter(private val listener: OnAdapterListener) : BaseTreeAdapter<IF
 
     override fun onBindVHForAll(binding: ViewDataBinding, m: IFeedModelType) {
         binding.setVariable(BR.item, m)
-        binding.executePendingBindings()
     }
 
 

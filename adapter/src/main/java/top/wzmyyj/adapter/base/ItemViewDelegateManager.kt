@@ -30,7 +30,7 @@ class ItemViewDelegateManager<M : IModelType> {
     }
 
     /**
-     * 当Bind ViewHolder时。getViewType=viewType的 ItemViewDelegate 响应执行 onBindVH 方法。
+     * 当Bind ViewHolder时。getViewType=viewType 的 ItemViewDelegate 响应执行 onBindVH 方法。
      * @param viewType viewType
      * @param binding ViewDataBinding
      * @param m model

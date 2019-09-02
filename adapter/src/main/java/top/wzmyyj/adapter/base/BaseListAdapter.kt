@@ -58,6 +58,7 @@ abstract class BaseListAdapter<M : IModelType> :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         onBindVHForAll(holder.binding, items[position])
         ivdManager.onBindVH(items[position].getViewType(), holder.binding, items[position])
+        holder.binding.executePendingBindings()
     }
 
 

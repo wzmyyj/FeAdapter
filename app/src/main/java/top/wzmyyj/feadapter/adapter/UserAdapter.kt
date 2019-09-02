@@ -20,7 +20,6 @@ class UserAdapter(private val listener: OnAdapterListener) : BaseListAdapter<IUs
 
     override fun onBindVHForAll(binding: ViewDataBinding, m: IUserModelType) {
         binding.setVariable(BR.item, m)
-        binding.executePendingBindings()
     }
 
 

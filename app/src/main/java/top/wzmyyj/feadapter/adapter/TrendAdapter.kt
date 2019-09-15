@@ -3,7 +3,7 @@ package top.wzmyyj.feadapter.adapter
 import androidx.databinding.ViewDataBinding
 import top.wzmyyj.feadapter.BR
 import top.wzmyyj.adapter.tree.BaseTreeAdapter
-import top.wzmyyj.adapter.base.ItemViewDelegateManager
+import top.wzmyyj.adapter.base.ViewTypeDelegateManager
 import top.wzmyyj.feadapter.model.IFeedModelType
 import top.wzmyyj.feadapter.model.TrendEmptyModel
 import top.wzmyyj.feadapter.model.TrendHeadModel
@@ -25,9 +25,9 @@ class TrendAdapter(private val listener: OnAdapterListener) : BaseTreeAdapter<IF
     }
 
 
-    override fun addDelegate(manager: ItemViewDelegateManager<IFeedModelType>) {
+    override fun addDelegate(manager: ViewTypeDelegateManager<IFeedModelType>) {
         super.addDelegate(manager)
-        manager.add(UserListIVD(listener))
+        manager.add(UserListVTD(listener))
     }
 
 

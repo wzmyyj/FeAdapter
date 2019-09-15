@@ -17,8 +17,8 @@ abstract class BaseListAdapter<M : IModelType> :
         RecyclerView.Adapter<BaseListAdapter.ViewHolder>() {
     private val items: MutableList<M> = ArrayList()
 
-    private val ivdManager: ItemViewDelegateManager<M> =
-            ItemViewDelegateManager()
+    private val ivdManager: ViewTypeDelegateManager<M> =
+            ViewTypeDelegateManager()
 
     class ViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -41,7 +41,7 @@ abstract class BaseListAdapter<M : IModelType> :
     /**
      * 初始化各种viewType处理委托。添加到Manager中。
      */
-    protected open fun addDelegate(manager: ItemViewDelegateManager<M>) {
+    protected open fun addDelegate(manager: ViewTypeDelegateManager<M>) {
     }
 
 

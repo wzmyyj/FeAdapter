@@ -4,13 +4,13 @@ import androidx.databinding.ViewDataBinding
 
 /**
  * Created on 2019/08/30.
- * 每个Item对View的处理委托（接口）。
+ * 同一种ViewType的每个Item对View的处理委托（接口）。
  *
  * @author feling
  * @version 1.0
  * @since 1.0
  */
-interface ItemViewDelegate<DB : ViewDataBinding, M : IModelType> {
+interface ViewTypeDelegate<DB : ViewDataBinding, M : IModelType> {
 
     /**
      * viewType满足某添加后委托生效。使用时写跟 M 的 getViewType() 值相同。

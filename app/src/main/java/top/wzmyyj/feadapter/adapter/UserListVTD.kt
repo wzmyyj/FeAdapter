@@ -13,7 +13,7 @@ import top.wzmyyj.feadapter.model.UserListModel
  * @since 1.0
  */
 class UserListVTD(private val listener: UserAdapter.OnAdapterListener) :
-        ViewTypeDelegate<TrendUserListBinding, UserListModel> {
+    ViewTypeDelegate<TrendUserListBinding, UserListModel> {
 
     override fun getViewType(): Int {
         return R.layout.trend_user_list
@@ -24,7 +24,7 @@ class UserListVTD(private val listener: UserAdapter.OnAdapterListener) :
     }
 
     override fun onBindVH(binding: TrendUserListBinding, m: UserListModel) {
-        (binding.rv4.adapter as UserAdapter).setData(m.list)
+        (binding.rv4.adapter as? UserAdapter)?.setData(m.list)
     }
 
 }

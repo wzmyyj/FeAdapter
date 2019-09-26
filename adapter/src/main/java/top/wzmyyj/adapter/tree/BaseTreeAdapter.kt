@@ -13,7 +13,7 @@ abstract class BaseTreeAdapter<T : IModelTree<T>> : BaseListAdapter<T>() {
     override fun multiList(list: List<T>): List<T> {
         return ArrayList<T>().also { multiList ->
             list.forEach { tree ->
-                multiList.addAll(TreeUtil.leafChildren(tree))
+                multiList.addAll(IModelTree.ergodic(tree))
             }
         }
     }

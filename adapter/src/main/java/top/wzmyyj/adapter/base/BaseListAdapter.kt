@@ -14,13 +14,13 @@ import androidx.recyclerview.widget.RecyclerView
  * @since 1.0
  */
 abstract class BaseListAdapter<M : IModelType> :
-        RecyclerView.Adapter<BaseListAdapter.ViewHolder>() {
+    RecyclerView.Adapter<BaseListAdapter.BindingViewHolder>() {
     private val items: MutableList<M> = ArrayList()
 
     private val ivdManager: ViewTypeDelegateManager<M> =
-            ViewTypeDelegateManager()
+        ViewTypeDelegateManager()
 
-    class ViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root)
+    class BindingViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         addDelegate(ivdManager)
@@ -45,17 +45,22 @@ abstract class BaseListAdapter<M : IModelType> :
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = DataBindingUtil.inflate<ViewDataBinding>(
-                LayoutInflater.from(parent.context),
-                viewType, parent, false
-        )
-        onCreateVHForAll(binding)
-        ivdManager.onCreateVH(binding, viewType)
-        return ViewHolder(binding)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BindingViewHolder {
+        val holder = createVH(parent, viewType)
+        onCreateVHForAll(holder.binding)
+        ivdManager.onCreateVH(holder.binding, viewType)
+        return holder
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    protected open fun createVH(parent: ViewGroup, viewType: Int): BindingViewHolder {
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
+            LayoutInflater.from(parent.context), viewType, parent, false
+        )
+        return BindingViewHolder(binding)
+    }
+
+
+    override fun onBindViewHolder(holder: BindingViewHolder, position: Int) {
         onBindVHForAll(holder.binding, items[position])
         ivdManager.onBindVH(holder.binding, items[position])
         holder.binding.executePendingBindings()
@@ -101,12 +106,11 @@ abstract class BaseListAdapter<M : IModelType> :
         notifyItemRangeInserted(preSize, multiList.size)
     }
 
-
     /**
      * 只刷新局部数据。
      */
-    fun changeData(vararg ms: M) {
-        val multiList = multiList(ms.toList())
+    fun changeData(list: List<M>) {
+        val multiList = multiList(list)
         for (m in multiList) {
             if (m in items) {
                 val index = items.indexOf(m)
@@ -115,12 +119,11 @@ abstract class BaseListAdapter<M : IModelType> :
         }
     }
 
-
     /**
      * 只移除局部数据。
      */
-    fun removeData(vararg ms: M) {
-        val multiList = multiList(ms.toList())
+    fun removeData(list: List<M>) {
+        val multiList = multiList(list)
         for (m in multiList) {
             if (m in items) {
                 val index = items.indexOf(m)
@@ -128,6 +131,36 @@ abstract class BaseListAdapter<M : IModelType> :
                 notifyItemRemoved(index)
             }
         }
+    }
+
+
+    /**
+     * 设置数据
+     */
+    fun setData(vararg ms: M) {
+        setData(ms.toList())
+    }
+
+    /**
+     * 添加数据
+     */
+    fun addData(vararg ms: M) {
+        addData(ms.toList())
+    }
+
+    /**
+     * 只刷新局部数据。
+     */
+    fun changeData(vararg ms: M) {
+        changeData(ms.toList())
+    }
+
+
+    /**
+     * 只移除局部数据。
+     */
+    fun removeData(vararg ms: M) {
+        removeData(ms.toList())
     }
 
     /**

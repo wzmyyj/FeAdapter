@@ -4,7 +4,7 @@ import androidx.databinding.ViewDataBinding
 
 /**
  * Created on 2019/08/30.
- * 同一种ViewType的每个Item对View的处理委托（接口）。
+ * 同一种ViewType的每个Item对View的处理委托（接口）。一中viewType一个对象即可。
  *
  * @author feling
  * @version 1.0

@@ -7,7 +7,7 @@ uploadArchives {
             pom.artifactId = "adapter"
             pom.version = "1.0.0"
             pom.packaging = 'aar'
-            repository(url: uri("${rootProject.projectDir}\\repo"))
+            repository(url: uri("${rootProject.projectDir}"))
         }
     }
 }

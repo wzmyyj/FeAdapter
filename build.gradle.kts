@@ -18,7 +18,7 @@ allprojects {
         google()
         jcenter()
         maven {
-            setUrl("${rootProject.projectDir}\\repo")
+            setUrl("${rootProject.projectDir}")
         }
     }
 }

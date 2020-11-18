@@ -1,0 +1,13 @@
+apply plugin: 'maven'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.groupId = 'top.wzmyyj.adapter'
+            pom.artifactId = "adapter"
+            pom.version = "1.0.0"
+            pom.packaging = 'aar'
+            repository(url: uri("${rootProject.projectDir}\\repo"))
+        }
+    }
+}

@@ -1,10 +1,16 @@
 plugins { id(Android.library) }
 useKotlin()
 setupCore()
-android{
+android {
     @Suppress("DEPRECATION")
     dataBinding.isEnabled = true
 }
 dependencies {
     implementation(Dependencies.androidx_recyclerview)
+}
+
+useMaven()
+
+apply {
+    from("build2.gradle")
 }

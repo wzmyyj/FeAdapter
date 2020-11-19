@@ -12,11 +12,11 @@ import androidx.databinding.ViewDataBinding
  * Please let your RecyclerView.Adapter implements IExtAdapter.
  *
  * @author feling
- * @version 1.0.0
+ * @version 1.0.1
  * @since 1.0.0
  */
 @MainThread
-interface IFeAdapter<M : IVhModelType> {
+interface IRvAdapter<M : IVhModelType> {
 
     /**
      * What to do when creating the viewHolder for all.
@@ -44,23 +44,8 @@ interface IFeAdapter<M : IVhModelType> {
     fun initManager(manager: ViewTypeDelegateManager<M>) {}
 
     /**
-     * Set data list.
-     */
-    fun setList(list: List<M>)
-
-    /**
-     * Get data list.
-     */
-    fun getList(): List<M>
-
-    /**
      * Get item by position.
      */
-    fun getItem(position: Int): M? = getList().getOrNull(position)
-
-    /**
-     * Refresh some items.
-     */
-    fun refreshItems(items: List<M>)
+    fun getModel(position: Int): M?
 
 }

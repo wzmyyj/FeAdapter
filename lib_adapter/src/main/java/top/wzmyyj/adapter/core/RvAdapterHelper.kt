@@ -13,12 +13,12 @@ import top.wzmyyj.adapter.core.ISpanSize.Companion.SPAN_SIZE_SINGLE
  * FeAdapterHelper. It can be easily used in adapter.
  *
  * @author feling
- * @version 1.0.0
+ * @version 1.0.1
  * @since 1.0.0
- * @see IFeAdapter
- * @see FeAdapter
+ * @see IRvAdapter
+ * @see RvAdapter
  */
-class FeAdapterHelper<M : IVhModelType>(private val adapter: IFeAdapter<M>) {
+class RvAdapterHelper<M : IVhModelType>(private val adapter: IRvAdapter<M>) {
 
     private val ivdManager: ViewTypeDelegateManager<M> = ViewTypeDelegateManager()
 
@@ -52,7 +52,7 @@ class FeAdapterHelper<M : IVhModelType>(private val adapter: IFeAdapter<M>) {
      * Called by RecyclerView to display the data at the specified position.
      */
     fun onBindViewHolder(holder: BindingViewHolder, position: Int) {
-        val item = adapter.getItem(position) ?: return
+        val item = adapter.getModel(position) ?: return
         setFullSpan(holder, item)
         adapter.onBindVHForAll(holder.binding, item)
         ivdManager.onBindVH(holder.binding, item)
@@ -60,14 +60,28 @@ class FeAdapterHelper<M : IVhModelType>(private val adapter: IFeAdapter<M>) {
     }
 
     /**
-     * Compare the list to find the same items and refresh them.
+     * Compare the list to find the same items and notify adapter.
+     * Because the wrapper length may change. First and last as the basis.
+     * It doesn't matter if the middle one is changed.
+     * Make sure the head and tail remain the same are OK.
      */
-    fun refreshItems(items: List<M>, dataList: List<M>, notify: (Int) -> Unit) {
-        val li = transform(items)
-        for (m in li) {
-            if (m in dataList) {
-                notify(dataList.indexOf(m))
+    fun compareItems(items: Array<out M>, dataList: List<M>, notify: (Int, Int) -> Unit) {
+        items.forEach { m ->
+            if (m is IVhModelWrapper<*>) {
+                val f = ArrayList<M>()
+                findLeaf(m, f)
+                if (f.isEmpty()) return@forEach
+                val l = dataList.indexOf(f.first())
+                if (l == -1) return@forEach
+                val r = dataList.indexOf(f.last())
+                if (r == -1) return@forEach
+                val c = r - l
+                if (c < 1) return@forEach
+                notify(l, c)
             }
+            val l = dataList.indexOf(m)
+            if (l == -1) return@forEach
+            notify(l, 1)
         }
     }
 
@@ -102,7 +116,7 @@ class FeAdapterHelper<M : IVhModelType>(private val adapter: IFeAdapter<M>) {
         if (layoutManager is GridLayoutManager) {
             layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
-                    val item = adapter.getItem(position)
+                    val item = adapter.getModel(position)
                     if (item is ISpanSize) {
                         val spanSize = item.getSpanSize()
                         return if (spanSize == SPAN_SIZE_FULL) layoutManager.spanCount else spanSize

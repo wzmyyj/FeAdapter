@@ -9,16 +9,16 @@ import androidx.recyclerview.widget.RecyclerView
  * Simple FeAdapter. You can write your own {@link RecyclerView.Adapter} according to this.
  *
  * @author feling
- * @version 1.0.0
+ * @version 1.0.1
  * @since 1.0.0
  * @see RecyclerView.Adapter
- * @see FeAdapterHelper
- * @see IFeAdapter
+ * @see RvAdapterHelper
+ * @see IRvAdapter
  */
-abstract class FeAdapter<M : IVhModelType> : RecyclerView.Adapter<BindingViewHolder>(),
-    IFeAdapter<M> {
+abstract class RvAdapter<M : IVhModelType> : RecyclerView.Adapter<BindingViewHolder>(),
+    IRvAdapter<M>, IRvAdapterMutable<M> {
 
-    private val helper by lazy { FeAdapterHelper(this) }
+    private val helper by lazy { RvAdapterHelper(this) }
 
     private val dataList = ArrayList<M>()
 
@@ -59,11 +59,16 @@ abstract class FeAdapter<M : IVhModelType> : RecyclerView.Adapter<BindingViewHol
         return dataList
     }
 
-    override fun refreshItems(items: List<M>) {
-        helper.refreshItems(items, dataList) { position ->
-            if (position in 0 until itemCount) {
-                notifyItemChanged(position)
-            }
+    override fun refreshItems(vararg items: M) {
+        helper.compareItems(items, dataList) { l, c ->
+            notifyItemRangeChanged(l, c)
+        }
+    }
+
+    override fun removeItems(vararg items: M) {
+        helper.compareItems(items, dataList) { l, c ->
+            for (i in l until l + c) dataList.removeAt(i)
+            notifyItemRangeRemoved(l, c)
         }
     }
 

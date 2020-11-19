@@ -1,9 +1,8 @@
 plugins { id(Android.application) }
 useKotlin()
 setupCore()
-android{
-    @Suppress("DEPRECATION")
-    dataBinding.isEnabled = true
+android {
+    buildFeatures.dataBinding = true
     defaultConfig.multiDexEnabled = true
     defaultConfig.applicationId = AppConfig.applicationId
     flavorDimensions("channel")

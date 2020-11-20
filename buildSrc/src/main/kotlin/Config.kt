@@ -20,7 +20,10 @@ object AndroidConfig {
     const val buildToolsVersion = "30.0.2"
 }
 
-object Android {
+object PluginId {
     const val application = "com.android.application"
     const val library = "com.android.library"
+    const val java_library = "java-library"
+    const val bintray_publish = "com.github.panpf.bintray-publish"
+
 }

@@ -65,13 +65,3 @@ fun Project.useKotlin() {
     }
 }
 
-/**
- * Use maven in this module.
- */
-fun Project.useMaven() {
-    apply {
-        plugin("maven")
-    }
-}
-
-

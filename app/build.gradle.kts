@@ -1,4 +1,4 @@
-plugins { id(Android.application) }
+plugins { id(PluginId.application) }
 useKotlin()
 setupCore()
 android {

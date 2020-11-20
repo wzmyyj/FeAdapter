@@ -94,6 +94,8 @@ class RvAdapterHelper<M : IVhModelType>(private val adapter: IRvAdapter<M>) {
         return result
     }
 
+    //--------------private method----------------//
+
     /**
      * Recursively traversing all leaf nodes.
      */

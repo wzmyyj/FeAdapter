@@ -38,4 +38,8 @@ object Dependencies {
     const val test_junit = "androidx.test.ext:junit:1.1.2"
     const val test_espresso = "androidx.test.espresso:espresso-core:3.2.0"
 
+    // apt
+    const val auto_service = "com.google.auto.service:auto-service:1.0-rc4"
+    const val java_poet = "com.squareup:javapoet:1.10.0"
+
 }

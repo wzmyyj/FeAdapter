@@ -1,4 +1,4 @@
-plugins { id(Android.library) }
+plugins { id(PluginId.library) }
 useKotlin()
 setupCore()
 android { buildFeatures.dataBinding = true }
@@ -6,11 +6,7 @@ dependencies {
     implementation(Dependencies.androidx_recyclerview)
 }
 
-useMaven()
-
-apply {
-    plugin("com.github.panpf.bintray-publish")
-}
+apply { plugin(PluginId.bintray_publish) }
 
 configure<com.github.panpf.bintray.publish.PublishExtension> {
     userOrg = "wzmyyj"

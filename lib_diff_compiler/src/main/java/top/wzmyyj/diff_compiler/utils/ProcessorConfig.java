@@ -13,8 +13,10 @@ public interface ProcessorConfig {
     String DIFF_ANNOTATION_SAME_ITEM = "top.wzmyyj.diff_annotation.SameItem";
     String DIFF_ANNOTATION_SAME_CONTENT = "top.wzmyyj.diff_annotation.SameContent";
 
-    // 目的是接收 包名（APT 存放的包名）
-    String APT_PACKAGE = "packageNameForAPT";
+    String DIFF_API_PACKAGE = " top.wzmyyj.diff_api";
 
     String MODEL_NAME = "Diff$$Model$$";
+
+    String TYPE_MODEL_TYPE = DIFF_API_PACKAGE + ".IDiffModelType";
+    String TYPE_PAYLOAD = DIFF_API_PACKAGE + ".Payload";
 }

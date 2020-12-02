@@ -3,6 +3,7 @@ useKotlin()
 setupCore()
 dependencies {
     implementation(Dependencies.androidx_recyclerview)
+    implementation(project(":lib_diff_annotation"))
 }
 
 //

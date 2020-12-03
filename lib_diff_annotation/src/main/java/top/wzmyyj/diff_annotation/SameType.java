@@ -7,8 +7,9 @@ import java.lang.annotation.Target;
 
 /**
  * Created on 2020/11/20.
- *
- * 加上这个注解的属性，将用于 SameItem 的判断依据。
+ * <p>
+ * 加上这个注解的属性，将用于 SameItem 或 SameContent 判断时穿透到内部属性。
+ * 如果内部属性没有 {@link SameItem} 或 {@link SameContent} 标注，将没有作用。
  *
  * @author feling
  * @version 1.0.0
@@ -16,7 +17,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.FIELD) // 该注解作用在类之上 字段上有作用
 @Retention(RetentionPolicy.CLASS) // 要在编译时进行一些预处理操作，注解会在class文件中存在
-public @interface SameItem {
+public @interface SameType {
 
     // 用于填写表示这个字段的名称
     String name() default "";

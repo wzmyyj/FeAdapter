@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 /**
  * Created on 2020/11/20.
  *
+ * 加上这个注解的属性，将用于 SameContent 的判断依据。
+ *
  * @author feling
  * @version 1.0.0
  * @since 1.0.0

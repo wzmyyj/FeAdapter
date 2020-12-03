@@ -12,6 +12,7 @@ public interface ProcessorConfig {
     // 需要处理的注解
     String DIFF_ANNOTATION_SAME_ITEM = "top.wzmyyj.diff_annotation.SameItem";
     String DIFF_ANNOTATION_SAME_CONTENT = "top.wzmyyj.diff_annotation.SameContent";
+    String DIFF_ANNOTATION_SAME_TYPE = "top.wzmyyj.diff_annotation.SameType";
 
     String DIFF_API_PACKAGE = " top.wzmyyj.diff_api";
 

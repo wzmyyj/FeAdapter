@@ -1,4 +1,4 @@
-package top.wzmyyj.diff_api.a;
+package top.wzmyyj.feadapter.model;
 
 import top.wzmyyj.diff_annotation.SameContent;
 import top.wzmyyj.diff_annotation.SameItem;
@@ -27,7 +27,5 @@ public class XxModel {
 
     @SameType("hhhh")
     public YyModel yy;
-
-    public String c;
 
 }

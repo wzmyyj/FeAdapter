@@ -20,5 +20,5 @@ import java.lang.annotation.Target;
 public @interface SameType {
 
     // 用于填写表示这个字段的名称
-    String name() default "";
+    String value() default "";
 }

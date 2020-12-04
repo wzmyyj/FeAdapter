@@ -14,15 +14,15 @@ import top.wzmyyj.diff_api.Payload;
  */
 public class Diff$$Model$$XxModel<T extends XxModel> implements IDiffModelType<T> {
 
-    public long id;
+    private long id;
 
-    public int count;
+    private int count;
 
-    public boolean valid;
+    private boolean valid;
 
-    public String name;
+    private String name;
 
-    public final IDiffModelType<YyModel> yy = new Diff$$Model$$YyModel<>();
+    private final IDiffModelType<YyModel> yy = new Diff$$Model$$YyModel<>();
 
     @Override
     public boolean isSameItem(T m) {

@@ -2,7 +2,8 @@ plugins { id(PluginId.java_library) }
 
 dependencies {
     fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar")))
-    implementation(Dependencies.auto_service)
+    compileOnly(Dependencies.auto_service)
+    annotationProcessor(Dependencies.auto_service)
     implementation(Dependencies.java_poet)
     implementation(project(":lib_diff_annotation"))
 }

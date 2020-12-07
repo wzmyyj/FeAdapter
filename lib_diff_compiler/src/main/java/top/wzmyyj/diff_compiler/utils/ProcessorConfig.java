@@ -18,9 +18,11 @@ public interface ProcessorConfig {
     String OPTIONS_MODULE_NAME = "moduleNameForDiffAPT"; // 目的是接收 每个module名称
     String OPTIONS_PACKAGE_NAME = "packageNameForDiffAPT"; // 目的是接收 包名（APT 存放的包名）
 
-    String DIFF_API_PACKAGE = " top.wzmyyj.diff_api";
+    String DIFF_API_PACKAGE = "top.wzmyyj.diff_api";
 
-    String MODEL_NAME = "Diff$$Model$$";
+    String MODEL_NAME_PRE = "Diff$$Model$$";
+
+    String MODEL_PACKAGE_LAST = ".diff";
 
     String TYPE_MODEL_TYPE = DIFF_API_PACKAGE + ".IDiffModelType";
     String TYPE_PAYLOAD = DIFF_API_PACKAGE + ".Payload";

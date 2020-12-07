@@ -12,7 +12,7 @@ import top.wzmyyj.diff_api.Payload;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class Diff$$Model$$XxModel<T extends XxModel> implements IDiffModelType<T> {
+public class Diff$$Model$$XxModel implements IDiffModelType {
 
     private long id;
 
@@ -20,25 +20,38 @@ public class Diff$$Model$$XxModel<T extends XxModel> implements IDiffModelType<T
 
     private boolean valid;
 
-    private String name;
+    private Object name;
 
-    private final IDiffModelType<YyModel> yy = new Diff$$Model$$YyModel<>();
+    private final Diff$$Model$$YyModel yy = new Diff$$Model$$YyModel();
 
     @Override
-    public boolean isSameItem(T m) {
+    public int sameItemCount() {
+        return 1 + yy.sameItemCount();
+    }
+
+    @Override
+    public int sameContentCount() {
+        return 3 + yy.sameContentCount();
+    }
+
+    @Override
+    public boolean isSameItem(Object o) {
+        XxModel m = (XxModel) o;
         return this.id == m.id
                 && this.yy.isSameItem(m.yy);
     }
 
     @Override
-    public boolean isSameContent(T m) {
+    public boolean isSameContent(Object o) {
+        XxModel m = (XxModel) o;
         return this.count == m.count && this.valid == m.valid
                 && Objects.equals(this.name, m.name)
                 && this.yy.isSameContent(m.yy);
     }
 
     @Override
-    public void from(T m) {
+    public void from(Object o) {
+        XxModel m = (XxModel) o;
         this.id = m.id;
         this.count = m.count;
         this.valid = m.valid;
@@ -47,7 +60,8 @@ public class Diff$$Model$$XxModel<T extends XxModel> implements IDiffModelType<T
     }
 
     @Override
-    public Payload payload(T m) {
+    public Payload payload(Object o) {
+        XxModel m = (XxModel) o;
         Payload p = new Payload();
         if (this.count != m.count) {
             p.change.put("count", true);

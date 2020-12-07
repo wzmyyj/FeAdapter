@@ -26,5 +26,6 @@ dependencies {
 //    api(project(":lib_adapter"))
 
     implementation(project(":lib_diff_annotation"))
+    implementation(project(":lib_diff_api"))
     kapt2(project(":lib_diff_compiler"))
 }

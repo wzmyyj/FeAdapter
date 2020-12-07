@@ -15,4 +15,8 @@ public class Payload {
     public Map<String, Boolean> change = new HashMap<>();
 
     public Map<String, Object> data = new HashMap<>();
+
+    public boolean isEmpty() {
+        return change.isEmpty();
+    }
 }

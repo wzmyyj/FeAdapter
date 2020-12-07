@@ -1,12 +1,20 @@
 package top.wzmyyj.diff_compiler;
 
 import com.google.auto.service.AutoService;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -20,6 +28,7 @@ import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
@@ -37,8 +46,12 @@ import static javax.tools.Diagnostic.Kind.NOTE;
 import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.DIFF_ANNOTATION_SAME_CONTENT;
 import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.DIFF_ANNOTATION_SAME_ITEM;
 import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.DIFF_ANNOTATION_SAME_TYPE;
+import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.MODEL_NAME_PRE;
+import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.MODEL_PACKAGE_LAST;
 import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.OPTIONS_MODULE_NAME;
 import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.OPTIONS_PACKAGE_NAME;
+import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.TYPE_MODEL_TYPE;
+import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.TYPE_PAYLOAD;
 
 /**
  * Created on 2020/12/01.
@@ -86,7 +99,12 @@ public class DiffProcessor extends AbstractProcessor {
         public TypeElement data = null;
         // 集合中最近的父类类型，下一个节点
         public ElementNode next = null;
-        public final Set<VariableElement> allSet = new HashSet<>();
+        // SameItem的判断点总数，包含父类和穿透类型
+        public int sameItemCount = 0;
+        // SameContent的判断点总数，包含父类和穿透类型
+        public int sameContentCount = 0;
+        // 主要属性的集合，只包含sameItem和sameContent的
+        public final Set<VariableElement> mainSet = new HashSet<>();
         public final List<VariableElement> sameItemList = new ArrayList<>();
         public final List<VariableElement> sameContentList = new ArrayList<>();
         // 穿透属性map，Element为key, 属性类型或最近的父类类型为value
@@ -98,7 +116,17 @@ public class DiffProcessor extends AbstractProcessor {
     // 所有以叶子子类为起点，最近的父类为下一个节点 的单链表集合
     private final Set<ElementNode> rootNodeSet = new HashSet<>();
     // 记录生成过的model文件
-    private final Map<ElementNode, Object> tempModelMap = new HashMap<>();
+    private final Map<ElementNode, ClassBean> tempModelMap = new HashMap<>();
+
+    private static class ClassBean {
+        public String clzName;
+        public String packageName;
+
+        public ClassBean(String packageName, String clzName) {
+            this.clzName = clzName;
+            this.packageName = packageName;
+        }
+    }
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnvironment) {
@@ -161,15 +189,15 @@ public class DiffProcessor extends AbstractProcessor {
                 TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
                 if (tempElementMap.containsKey(enclosingElement)) {
                     ElementNode node = tempElementMap.get(enclosingElement);
-                    if (node.allSet.contains(ve)) {
+                    if (node.mainSet.contains(ve)) {
                         error("@SameItem, @SameContent, @SameType 不能同时作用在一个属性上！");
                     }
-                    node.allSet.add(ve);
+                    node.mainSet.add(ve);
                     node.sameItemList.add(ve);
                 } else { // 没有key (类型）
                     ElementNode node = new ElementNode();
                     node.data = enclosingElement;
-                    node.allSet.add(ve);
+                    node.mainSet.add(ve);
                     node.sameItemList.add(ve);
                     tempElementMap.put(enclosingElement, node); // 加入缓存
                 }
@@ -190,15 +218,15 @@ public class DiffProcessor extends AbstractProcessor {
                 TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
                 if (tempElementMap.containsKey(enclosingElement)) {
                     ElementNode node = tempElementMap.get(enclosingElement);
-                    if (node.allSet.contains(ve)) {
+                    if (node.mainSet.contains(ve)) {
                         error("@SameItem, @SameContent, @SameType 不能同时作用在一个属性上！");
                     }
-                    node.allSet.add(ve);
+                    node.mainSet.add(ve);
                     node.sameContentList.add(ve);
                 } else { // 没有key (类型）
                     ElementNode node = new ElementNode();
                     node.data = enclosingElement;
-                    node.allSet.add(ve);
+                    node.mainSet.add(ve);
                     node.sameContentList.add(ve);
                     tempElementMap.put(enclosingElement, node); // 加入缓存
                 }
@@ -213,42 +241,26 @@ public class DiffProcessor extends AbstractProcessor {
      */
     private void saveElementSameType(Set<? extends Element> elements) {
         if (!EmptyUtils.isNullOrEmpty(elements)) {
-            Set<TypeElement> typeSet = new HashSet<>(tempElementMap.keySet());
             for (Element element : elements) {
                 VariableElement ve = (VariableElement) element;
                 if (ve.asType().getKind() != TypeKind.DECLARED) {
                     error("@SameType 只能作用在声明类型的属性上！");
                 }
-                // 从已有的类型里查找有无属性的类型或父类
-                TypeMirror typeMirror = ve.asType();
-                boolean hasType = false;
-                for (TypeElement te : typeSet) {
-                    TypeMirror tm = te.asType();
-                    if (typeTool.isSameType(typeMirror, tm) || typeTool.isSubtype(typeMirror, te.asType())) {
-                        hasType = true;
-                        break;
-                    }
-                }
-                if (!hasType) {
-                    error("@SameType 的属性类型 或其父类, 没有被 @SameItem 或 @SameContent 注解！");
-                }
                 // 注解在属性的上面，属性节点父节点 是 类节点
                 TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
                 if (tempElementMap.containsKey(enclosingElement)) {
-                    ElementNode group = tempElementMap.get(enclosingElement);
-                    if (group.allSet.contains(ve)) {
+                    ElementNode node = tempElementMap.get(enclosingElement);
+                    if (node.mainSet.contains(ve)) {
                         error("@SameItem, @SameContent, @SameType 不能同时作用在一个属性上！");
                     }
-                    group.allSet.add(ve);
                     // 类型先为空
-                    group.sameTypeMap.put(ve, null);
+                    node.sameTypeMap.put(ve, null);
                 } else { // 没有key (类型）
-                    ElementNode group = new ElementNode();
-                    group.data = enclosingElement;
-                    group.allSet.add(ve);
+                    ElementNode node = new ElementNode();
+                    node.data = enclosingElement;
                     // 类型先为空
-                    group.sameTypeMap.put(ve, null);
-                    tempElementMap.put(enclosingElement, group); // 加入缓存
+                    node.sameTypeMap.put(ve, null);
+                    tempElementMap.put(enclosingElement, node); // 加入缓存
                 }
             }
         }
@@ -300,11 +312,13 @@ public class DiffProcessor extends AbstractProcessor {
                     }
                     if (isFind) break;
                 }
-                if (map.get(element) == null) {// 正常情况下不会，仅仅做个校验
-                    error("一定是哪里错了！");
+                if (map.get(element) == null) {// 做个校验
+                    error("@SameType 的属性类型 为无效的类型！" + typeMirror.getClass().getSimpleName() + ":" + element.getSimpleName());
                 }
             }
         }
+
+
     }
 
     /**
@@ -330,19 +344,29 @@ public class DiffProcessor extends AbstractProcessor {
 
     //--------------创建文件----------------//
 
+    // 记录是否进入过createModelFile方法，防止造成无限递归。
+    private final Set<ElementNode> createModelNodeSet = new HashSet<>();
+    private TypeElement modelType = null;
+    private TypeElement payloadType = null;
+
     /**
      * 创建所有model文件。
      */
     private void createAllModelFile() {
+        modelType = elementTool.getTypeElement(TYPE_MODEL_TYPE);
+        payloadType = elementTool.getTypeElement(TYPE_PAYLOAD);
+        if (modelType == null) {
+            error("没找到" + TYPE_MODEL_TYPE);
+        }
+        if (payloadType == null) {
+            error("没找到" + TYPE_PAYLOAD);
+        }
         createModelNodeSet.clear();
         // 从每个叶子子类开始
         for (ElementNode node : rootNodeSet) {
             createModelFile(node);
         }
     }
-
-    // 记录是否进入过createModelFile方法，防止造成无限递归。
-    private final Set<ElementNode> createModelNodeSet = new HashSet<>();
 
     /**
      * 生成单个model的文件。存在递归调用。
@@ -354,28 +378,211 @@ public class DiffProcessor extends AbstractProcessor {
         if (node == null) return;
         if (tempModelMap.get(node) != null) return;// 生成过了
         if (createModelNodeSet.contains(node)) {
-            error("小老弟 写的 @SameType 的属性 存在闭环呀！");
+            error("小老弟 写的 @SameType 的属性 存在闭环呀！" + node.data.getQualifiedName());
         }
         createModelNodeSet.add(node);
         // 优先生成父类文件
         if (node.next != null) {
             createModelFile(node.next);
+            node.sameItemCount += node.next.sameItemCount;
+            node.sameContentCount += node.next.sameContentCount;
         }
         // 优先生成穿透属性类型文件
         if (!node.sameTypeMap.isEmpty()) {
             for (ElementNode n : node.sameTypeMap.values()) {
                 createModelFile(n);
+                node.sameItemCount += n.sameItemCount;
+                node.sameContentCount += n.sameContentCount;
             }
         }
-        tempModelMap.put(node, new Object());
+        node.sameItemCount += node.sameItemList.size();
+        node.sameContentCount += node.sameContentList.size();
 
-//        for (VariableElement element : node.allSet) {
-//            ClassName cn=
-//            Type type = element.asType().getKind().;
-//            FieldSpec.Builder builder = FieldSpec.builder(type, element.getSimpleName(), Modifier.PRIVATE);
-//
-//        }
+        if (node.sameItemCount == 0 && node.sameContentCount == 0) {// 正常情况不可能，仅做个校验
+            error("一定是哪里出问题了！");
+        }
+        note(">>>>>>>>>>>>>>>>>>>>>开始写代码！");
+        // 写代码
+        try {
+            writeModelFile(node);
+        } catch (Exception e) {
+            error(e.getMessage());
+        }
 
+
+    }
+
+    /**
+     * 写代码。
+     *
+     * @param node 信息
+     */
+    private void writeModelFile(ElementNode node) throws IOException {
+        List<FieldSpec> fieldSpecList = new ArrayList<>();
+        List<MethodSpec> methodSpecList = new ArrayList<>();
+        ClassName nodeCn = ClassName.get(node.data);
+
+        // 基本属性
+        for (VariableElement element : node.mainSet) {
+            TypeName cn = TypeName.get(element.asType());// 属性类型
+            FieldSpec.Builder builder = FieldSpec.builder(cn, element.getSimpleName().toString(), Modifier.PRIVATE);
+            fieldSpecList.add(builder.build());
+        }
+
+        // 穿透属性
+        for (Map.Entry<VariableElement, ElementNode> entry : node.sameTypeMap.entrySet()) {
+            ClassBean cb = tempModelMap.get(entry.getValue());
+            if (cb == null) {
+                error("一定是哪里出问题了2！");
+                return;
+            }
+            ClassName cn = ClassName.get(cb.packageName, cb.clzName);// 属性穿透类型
+            FieldSpec.Builder builder = FieldSpec.builder(cn, entry.getKey().getSimpleName().toString(), Modifier.PRIVATE)
+                    .initializer("new $T()", cn);
+            fieldSpecList.add(builder.build());
+        }
+
+        // 方法1：sumSameItemCount
+        MethodSpec.Builder methodBuilder1 = MethodSpec.methodBuilder("sameItemCount") // 方法名
+                .addAnnotation(Override.class) // 重写注解 @Override
+                .addModifiers(Modifier.PUBLIC) // public修饰符
+                .returns(int.class) // 方法返回类型
+                .addStatement("return $L", node.sameItemCount);
+        methodSpecList.add(methodBuilder1.build());
+
+        // 方法2：sumSameContentCount
+        MethodSpec.Builder methodBuilder2 = MethodSpec.methodBuilder("sameContentCount") // 方法名
+                .addAnnotation(Override.class) // 重写注解 @Override
+                .addModifiers(Modifier.PUBLIC) // public修饰符
+                .returns(int.class) // 方法返回类型
+                .addStatement("return $L", node.sameContentCount);
+        methodSpecList.add(methodBuilder2.build());
+
+        // 方法3：isSameItem
+        MethodSpec.Builder methodBuilder3 = MethodSpec.methodBuilder("isSameItem") // 方法名
+                .addAnnotation(Override.class) // 重写注解 @Override
+                .addModifiers(Modifier.PUBLIC) // public修饰符
+                .returns(boolean.class) // 方法返回类型
+                .addParameter(Object.class, "o")
+                .addStatement("$T $N = ($T) $N", nodeCn, "m", nodeCn, "o")
+                .addStatement("$T $N = $L", ClassName.get(Boolean.class), "s", node.sameItemCount > 0);
+        if (node.next != null && node.next.sameItemCount > 0) {
+            methodBuilder3.addStatement("$N &= super.isSameItem($N)", "s", "m");
+        }
+        for (VariableElement element : node.sameItemList) {
+            methodBuilder3.addStatement("$N &= $T.equals(this.$L,$N.$L)",
+                    "s", ClassName.get(Objects.class), element.getSimpleName(), "m", element.getSimpleName());
+        }
+        for (VariableElement element : node.sameTypeMap.keySet()) {
+            if (node.sameTypeMap.get(element).sameItemCount == 0) continue;
+            methodBuilder3.addStatement("$N &= this.$L.isSameItem($N.$L)",
+                    "s", element.getSimpleName(), "m", element.getSimpleName());
+        }
+        methodBuilder3.addStatement("return $N", "s");
+        methodSpecList.add(methodBuilder3.build());
+
+        // 方法4：isSameContent
+        MethodSpec.Builder methodBuilder4 = MethodSpec.methodBuilder("isSameContent") // 方法名
+                .addAnnotation(Override.class) // 重写注解 @Override
+                .addModifiers(Modifier.PUBLIC) // public修饰符
+                .returns(boolean.class) // 方法返回类型
+                .addParameter(Object.class, "o")
+                .addStatement("$T $N = ($T) $N", nodeCn, "m", nodeCn, "o")
+                .addStatement("$T $N = $L", ClassName.get(Boolean.class), "s", node.sameContentCount > 0);
+        if (node.next != null && node.next.sameContentCount > 0) {
+            methodBuilder4.addStatement("$N &= super.isSameContent($N)", "s", "m");
+        }
+        for (VariableElement element : node.sameContentList) {
+            methodBuilder4.addStatement("$N &= $T.equals(this.$L,$N.$L)",
+                    "s", ClassName.get(Objects.class), element.getSimpleName(), "m", element.getSimpleName());
+        }
+        for (VariableElement element : node.sameTypeMap.keySet()) {
+            if (node.sameTypeMap.get(element).sameContentCount == 0) continue;
+            methodBuilder4.addStatement("$N &= this.$L.isSameContent($N.$L)",
+                    "s", element.getSimpleName(), "m", element.getSimpleName());
+        }
+        methodBuilder4.addStatement("return $N", "s");
+        methodSpecList.add(methodBuilder4.build());
+
+        // 方法5：from
+        MethodSpec.Builder methodBuilder5 = MethodSpec.methodBuilder("from") // 方法名
+                .addAnnotation(Override.class) // 重写注解 @Override
+                .addModifiers(Modifier.PUBLIC) // public修饰符
+                .returns(void.class) // 方法返回类型
+                .addParameter(Object.class, "o")
+                .addStatement("$T $N = ($T) $N", nodeCn, "m", nodeCn, "o");
+        if (node.next != null) {
+            methodBuilder5.addStatement("super.from($N)", "m");
+        }
+        for (VariableElement element : node.mainSet) {
+            methodBuilder5.addStatement("this.$L = $N.$L",
+                    element.getSimpleName(), "m", element.getSimpleName());
+        }
+        for (VariableElement element : node.sameTypeMap.keySet()) {
+            methodBuilder5.addStatement("this.$L.from($N.$L)",
+                    element.getSimpleName(), "m", element.getSimpleName());
+        }
+        methodSpecList.add(methodBuilder5.build());
+
+        // 方法6：payload
+        MethodSpec.Builder methodBuilder6 = MethodSpec.methodBuilder("payload") // 方法名
+                .addAnnotation(Override.class) // 重写注解 @Override
+                .addModifiers(Modifier.PUBLIC) // public修饰符
+                .returns(ClassName.get(payloadType)) // 方法返回类型
+                .addParameter(Object.class, "o")
+                .addStatement("$T $N = ($T) $N", nodeCn, "m", nodeCn, "o");
+        if (node.next != null && node.next.sameContentCount > 0) {
+            methodBuilder6
+                    .addStatement("$T $N = super.payload($N)", ClassName.get(payloadType), "p", "m");
+        } else {
+            methodBuilder6.addStatement("$T $N = new $T()",
+                    ClassName.get(payloadType), "p", ClassName.get(payloadType));
+        }
+        for (VariableElement element : node.sameContentList) {
+            methodBuilder6
+                    .beginControlFlow("if (!$T.equals(this.$L, $N.$L))",
+                            ClassName.get(Objects.class), element.getSimpleName(), "m", element.getSimpleName())
+                    .addStatement("$N.change.put($S, true)", "p", element.getSimpleName())
+                    .addStatement("$N.data.put($S, $N.$L)", "p", element.getSimpleName(), "m", element.getSimpleName())
+                    .endControlFlow();
+        }
+        for (VariableElement element : node.sameTypeMap.keySet()) {
+            if (node.sameTypeMap.get(element).sameContentCount == 0) continue;
+            methodBuilder6
+                    .beginControlFlow("if (!this.$L.isSameContent($N.$L))",
+                            element.getSimpleName(), "m", element.getSimpleName())
+                    .addStatement("$N.change.put($S, true)", "p", element.getSimpleName())
+                    .addStatement("$N.data.put($S, $N.$L)", "p", element.getSimpleName(), "m", element.getSimpleName())
+                    .endControlFlow();
+        }
+        methodBuilder6.addStatement("return $N", "p");
+        methodSpecList.add(methodBuilder6.build());
+
+        // 生成类
+        String clzName = MODEL_NAME_PRE + node.data.getSimpleName();
+        TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(clzName) // 类名
+                .addModifiers(Modifier.PUBLIC) // public修饰符
+                .addFields(fieldSpecList)
+                .addMethods(methodSpecList);// 方法的构建（方法参数 + 方法体）
+        if (node.next != null) {
+            ClassBean cb = tempModelMap.get(node.next);
+            if (cb == null) {
+                error("一定是哪里出问题了2！");
+                return;
+            }
+            ClassName cn = ClassName.get(cb.packageName, cb.clzName);// 父类类型
+            typeBuilder.superclass(cn);
+        } else {
+            typeBuilder.addSuperinterface(ClassName.get(modelType)); // 实现IDiffModelType接口
+        }
+
+        // 生成类文件
+        String packageName = ClassName.get(node.data).packageName() + MODEL_PACKAGE_LAST;
+        JavaFile.builder(packageName, typeBuilder.build())
+                .build() // JavaFile构建完成
+                .writeTo(filer); // 文件生成器开始生成类文件
+
+        tempModelMap.put(node, new ClassBean(packageName, clzName));
     }
 
 

@@ -19,7 +19,7 @@ public class YyModel {
     @SameContent
     public String title;
 
-    @SameType()
-    public XxModel xx;
+//    @SameType()
+//    public XxModel zz;
 
 }

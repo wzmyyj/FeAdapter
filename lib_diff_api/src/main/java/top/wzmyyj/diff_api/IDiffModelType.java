@@ -7,13 +7,17 @@ package top.wzmyyj.diff_api;
  * @version 1.0.0
  * @since 1.0.0
  */
-public interface IDiffModelType<T> {
+public interface IDiffModelType {
 
-     boolean isSameItem(T m);
+    int sameItemCount();
 
-    boolean isSameContent(T m);
+    int sameContentCount();
 
-    void from(T m);
+    boolean isSameItem(Object o);
 
-    Payload payload(T m);
+    boolean isSameContent(Object o);
+
+    void from(Object o);
+
+    Payload payload(Object o);
 }

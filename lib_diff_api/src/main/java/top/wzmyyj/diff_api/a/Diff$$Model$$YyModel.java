@@ -14,30 +14,44 @@ import top.wzmyyj.diff_api.Payload;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class Diff$$Model$$YyModel<T extends YyModel> implements IDiffModelType<T> {
+public class Diff$$Model$$YyModel implements IDiffModelType {
 
     public long id;
 
     @Nullable
-    public String title;
+    public Object title;
 
     @Override
-    public boolean isSameItem(T m) {
+    public int sameItemCount() {
+        return 1;
+    }
+
+    @Override
+    public int sameContentCount() {
+        return 1;
+    }
+
+    @Override
+    public boolean isSameItem(Object o) {
+        YyModel m = (YyModel) o;
         return this.id == m.id;
     }
 
     @Override
-    public boolean isSameContent(T m) {
+    public boolean isSameContent(Object o) {
+        YyModel m = (YyModel) o;
         return Objects.equals(this.title, m.title);
     }
 
     @Override
-    public void from(T m) {
+    public void from(Object o) {
+        YyModel m = (YyModel) o;
 
     }
 
     @Override
-    public Payload payload(T m) {
+    public Payload payload(Object o) {
+        YyModel m = (YyModel) o;
         return null;
     }
 

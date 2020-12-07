@@ -13,4 +13,6 @@ public class ZzModel extends XxModel {
 
     @SameContent
     public boolean zzz;
+
+
 }

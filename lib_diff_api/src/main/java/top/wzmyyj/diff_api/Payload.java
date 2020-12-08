@@ -1,5 +1,7 @@
 package top.wzmyyj.diff_api;
 
+import androidx.annotation.NonNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,5 +20,9 @@ public class Payload {
 
     public boolean isEmpty() {
         return change.isEmpty();
+    }
+
+    public boolean isChange(@NonNull String key) {
+        return change.get(key);
     }
 }

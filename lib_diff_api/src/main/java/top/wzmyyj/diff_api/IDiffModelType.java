@@ -17,6 +17,8 @@ public interface IDiffModelType {
 
     boolean isSameContent(Object o);
 
+    boolean canHandle(Object o);
+
     void from(Object o);
 
     Payload payload(Object o);

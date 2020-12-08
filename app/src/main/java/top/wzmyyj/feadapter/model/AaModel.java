@@ -10,8 +10,8 @@ import top.wzmyyj.diff_annotation.SameItem;
  * @version 1
  * @since 1
  */
-public class AaModel {
+public class AaModel extends XxModel {
 
-    @SameItem
-    public boolean isOk;
+//    @SameItem
+//    public boolean isOk;
 }

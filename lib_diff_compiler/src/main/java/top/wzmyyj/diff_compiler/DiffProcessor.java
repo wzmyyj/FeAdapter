@@ -24,7 +24,6 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
@@ -46,10 +45,14 @@ import static javax.tools.Diagnostic.Kind.NOTE;
 import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.DIFF_ANNOTATION_SAME_CONTENT;
 import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.DIFF_ANNOTATION_SAME_ITEM;
 import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.DIFF_ANNOTATION_SAME_TYPE;
-import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.MODEL_NAME_PRE;
+import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.DIFF_API_PACKAGE;
+import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.FACTORY_HELPER_NAME;
+import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.FACTORY_NAME_LAST;
+import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.FACTORY_PACKAGE_LAST;
+import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.MODEL_NAME_LAST;
 import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.MODEL_PACKAGE_LAST;
-import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.OPTIONS_MODULE_NAME;
-import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.OPTIONS_PACKAGE_NAME;
+import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.TYPE_FACTORY;
+import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.TYPE_FACTORY_HELPER;
 import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.TYPE_MODEL_TYPE;
 import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.TYPE_PAYLOAD;
 
@@ -71,8 +74,8 @@ import static top.wzmyyj.diff_compiler.utils.ProcessorConfig.TYPE_PAYLOAD;
 // 允许/支持的注解类型，让注解处理器处理
 @SupportedAnnotationTypes({DIFF_ANNOTATION_SAME_ITEM, DIFF_ANNOTATION_SAME_CONTENT, DIFF_ANNOTATION_SAME_TYPE})
 
-// 注解处理器接收的参数
-@SupportedOptions({OPTIONS_MODULE_NAME, OPTIONS_PACKAGE_NAME})
+//// 注解处理器接收的参数
+//@SupportedOptions({OPTIONS_MODULE_NAME, OPTIONS_PACKAGE_NAME})
 
 public class DiffProcessor extends AbstractProcessor {
 
@@ -88,10 +91,10 @@ public class DiffProcessor extends AbstractProcessor {
     // 文件生成器， 类 资源 等，就是最终要生成的文件 是需要Filer来完成的
     private Filer filer;
 
-    // 各个模块传递过来的模块名
-    private String moduleName;
-    // 各个模块传递过来的包名
-    private String packageName;
+//    // 各个模块传递过来的模块名
+//    private String moduleName;
+//    // 各个模块传递过来的包名
+//    private String packageName;
 
     // 单链表缓存数据和处理继承关系
     static class ElementNode {
@@ -115,8 +118,6 @@ public class DiffProcessor extends AbstractProcessor {
     private final Map<TypeElement, ElementNode> tempElementMap = new HashMap<>();
     // 所有以叶子子类为起点，最近的父类为下一个节点 的单链表集合
     private final Set<ElementNode> rootNodeSet = new HashSet<>();
-    // 记录生成过的model文件
-    private final Map<ElementNode, ClassBean> tempModelMap = new HashMap<>();
 
     private static class ClassBean {
         public String clzName;
@@ -135,15 +136,15 @@ public class DiffProcessor extends AbstractProcessor {
         messager = processingEnvironment.getMessager();
         filer = processingEnvironment.getFiler();
         typeTool = processingEnvironment.getTypeUtils();
-        moduleName = processingEnvironment.getOptions().get(OPTIONS_MODULE_NAME);
-        packageName = processingEnvironment.getOptions().get(OPTIONS_PACKAGE_NAME);
-        note(">>>>>>>>>>>>>>>>>>>>>>" + OPTIONS_MODULE_NAME + "：" + moduleName);
-        note(">>>>>>>>>>>>>>>>>>>>>>" + OPTIONS_PACKAGE_NAME + "：" + packageName);
-        if (moduleName != null && packageName != null) {
-            note("APT 环境搭建完成....");
-        } else {
-            note("APT 环境有问题，请检查 " + OPTIONS_MODULE_NAME + " 与 " + OPTIONS_PACKAGE_NAME + " 为null...");
-        }
+//        moduleName = processingEnvironment.getOptions().get(OPTIONS_MODULE_NAME);
+//        packageName = processingEnvironment.getOptions().get(OPTIONS_PACKAGE_NAME);
+//        note(">>>>>>>>>>>>>>>>>>>>>>" + OPTIONS_MODULE_NAME + "：" + moduleName);
+//        note(">>>>>>>>>>>>>>>>>>>>>>" + OPTIONS_PACKAGE_NAME + "：" + packageName);
+//        if (moduleName != null && packageName != null) {
+//            note("APT 环境搭建完成....");
+//        } else {
+//            note("APT 环境有问题，请检查 " + OPTIONS_MODULE_NAME + " 与 " + OPTIONS_PACKAGE_NAME + " 为null...");
+//        }
     }
 
     @Override
@@ -170,6 +171,7 @@ public class DiffProcessor extends AbstractProcessor {
 
         // 创建文件
         createAllModelFile();
+        createAllFactoryFile();
 
         return true;
     }
@@ -344,10 +346,16 @@ public class DiffProcessor extends AbstractProcessor {
 
     //--------------创建文件----------------//
 
+    // 记录生成过的model文件
+    private final Map<ElementNode, ClassBean> tempModelMap = new HashMap<>();
+    // 记录生成过的factory文件
+    private final Map<ElementNode, ClassBean> tempFactoryMap = new HashMap<>();
     // 记录是否进入过createModelFile方法，防止造成无限递归。
     private final Set<ElementNode> createModelNodeSet = new HashSet<>();
     private TypeElement modelType = null;
     private TypeElement payloadType = null;
+    private TypeElement factoryType = null;
+    private TypeElement helperType = null;
 
     /**
      * 创建所有model文件。
@@ -413,7 +421,7 @@ public class DiffProcessor extends AbstractProcessor {
     }
 
     /**
-     * 写代码。
+     * 写代码。model文件
      *
      * @param node 信息
      */
@@ -465,13 +473,13 @@ public class DiffProcessor extends AbstractProcessor {
                 .returns(boolean.class) // 方法返回类型
                 .addParameter(Object.class, "o")
                 .addStatement("$T $N = ($T) $N", nodeCn, "m", nodeCn, "o")
-                .addStatement("$T $N = $L", ClassName.get(Boolean.class), "s", node.sameItemCount > 0);
+                .addStatement("$T $N = $L", boolean.class, "s", node.sameItemCount > 0);
         if (node.next != null && node.next.sameItemCount > 0) {
             methodBuilder3.addStatement("$N &= super.isSameItem($N)", "s", "m");
         }
         for (VariableElement element : node.sameItemList) {
             methodBuilder3.addStatement("$N &= $T.equals(this.$L,$N.$L)",
-                    "s", ClassName.get(Objects.class), element.getSimpleName(), "m", element.getSimpleName());
+                    "s", Objects.class, element.getSimpleName(), "m", element.getSimpleName());
         }
         for (VariableElement element : node.sameTypeMap.keySet()) {
             if (node.sameTypeMap.get(element).sameItemCount == 0) continue;
@@ -488,13 +496,13 @@ public class DiffProcessor extends AbstractProcessor {
                 .returns(boolean.class) // 方法返回类型
                 .addParameter(Object.class, "o")
                 .addStatement("$T $N = ($T) $N", nodeCn, "m", nodeCn, "o")
-                .addStatement("$T $N = $L", ClassName.get(Boolean.class), "s", node.sameContentCount > 0);
+                .addStatement("$T $N = $L", boolean.class, "s", node.sameContentCount > 0);
         if (node.next != null && node.next.sameContentCount > 0) {
             methodBuilder4.addStatement("$N &= super.isSameContent($N)", "s", "m");
         }
         for (VariableElement element : node.sameContentList) {
             methodBuilder4.addStatement("$N &= $T.equals(this.$L,$N.$L)",
-                    "s", ClassName.get(Objects.class), element.getSimpleName(), "m", element.getSimpleName());
+                    "s", Objects.class, element.getSimpleName(), "m", element.getSimpleName());
         }
         for (VariableElement element : node.sameTypeMap.keySet()) {
             if (node.sameTypeMap.get(element).sameContentCount == 0) continue;
@@ -504,62 +512,71 @@ public class DiffProcessor extends AbstractProcessor {
         methodBuilder4.addStatement("return $N", "s");
         methodSpecList.add(methodBuilder4.build());
 
-        // 方法5：from
-        MethodSpec.Builder methodBuilder5 = MethodSpec.methodBuilder("from") // 方法名
+        // 方法5：canHandle
+        MethodSpec.Builder methodBuilder5 = MethodSpec.methodBuilder("canHandle") // 方法名
+                .addAnnotation(Override.class) // 重写注解 @Override
+                .addModifiers(Modifier.PUBLIC) // public修饰符
+                .returns(boolean.class) // 方法返回类型
+                .addParameter(Object.class, "o")
+                .addStatement("return $N instanceof $T", "o", nodeCn);
+        methodSpecList.add(methodBuilder5.build());
+
+        // 方法6：from
+        MethodSpec.Builder methodBuilder6 = MethodSpec.methodBuilder("from") // 方法名
                 .addAnnotation(Override.class) // 重写注解 @Override
                 .addModifiers(Modifier.PUBLIC) // public修饰符
                 .returns(void.class) // 方法返回类型
                 .addParameter(Object.class, "o")
                 .addStatement("$T $N = ($T) $N", nodeCn, "m", nodeCn, "o");
         if (node.next != null) {
-            methodBuilder5.addStatement("super.from($N)", "m");
+            methodBuilder6.addStatement("super.from($N)", "m");
         }
         for (VariableElement element : node.mainSet) {
-            methodBuilder5.addStatement("this.$L = $N.$L",
+            methodBuilder6.addStatement("this.$L = $N.$L",
                     element.getSimpleName(), "m", element.getSimpleName());
         }
         for (VariableElement element : node.sameTypeMap.keySet()) {
-            methodBuilder5.addStatement("this.$L.from($N.$L)",
+            methodBuilder6.addStatement("this.$L.from($N.$L)",
                     element.getSimpleName(), "m", element.getSimpleName());
         }
-        methodSpecList.add(methodBuilder5.build());
+        methodSpecList.add(methodBuilder6.build());
 
-        // 方法6：payload
-        MethodSpec.Builder methodBuilder6 = MethodSpec.methodBuilder("payload") // 方法名
+        // 方法7：payload
+        MethodSpec.Builder methodBuilder7 = MethodSpec.methodBuilder("payload") // 方法名
                 .addAnnotation(Override.class) // 重写注解 @Override
                 .addModifiers(Modifier.PUBLIC) // public修饰符
                 .returns(ClassName.get(payloadType)) // 方法返回类型
                 .addParameter(Object.class, "o")
                 .addStatement("$T $N = ($T) $N", nodeCn, "m", nodeCn, "o");
         if (node.next != null && node.next.sameContentCount > 0) {
-            methodBuilder6
+            methodBuilder7
                     .addStatement("$T $N = super.payload($N)", ClassName.get(payloadType), "p", "m");
         } else {
-            methodBuilder6.addStatement("$T $N = new $T()",
+            methodBuilder7.addStatement("$T $N = new $T()",
                     ClassName.get(payloadType), "p", ClassName.get(payloadType));
         }
         for (VariableElement element : node.sameContentList) {
-            methodBuilder6
+            methodBuilder7
                     .beginControlFlow("if (!$T.equals(this.$L, $N.$L))",
-                            ClassName.get(Objects.class), element.getSimpleName(), "m", element.getSimpleName())
+                            Objects.class, element.getSimpleName(), "m", element.getSimpleName())
                     .addStatement("$N.change.put($S, true)", "p", element.getSimpleName())
                     .addStatement("$N.data.put($S, $N.$L)", "p", element.getSimpleName(), "m", element.getSimpleName())
                     .endControlFlow();
         }
         for (VariableElement element : node.sameTypeMap.keySet()) {
             if (node.sameTypeMap.get(element).sameContentCount == 0) continue;
-            methodBuilder6
+            methodBuilder7
                     .beginControlFlow("if (!this.$L.isSameContent($N.$L))",
                             element.getSimpleName(), "m", element.getSimpleName())
                     .addStatement("$N.change.put($S, true)", "p", element.getSimpleName())
                     .addStatement("$N.data.put($S, $N.$L)", "p", element.getSimpleName(), "m", element.getSimpleName())
                     .endControlFlow();
         }
-        methodBuilder6.addStatement("return $N", "p");
-        methodSpecList.add(methodBuilder6.build());
+        methodBuilder7.addStatement("return $N", "p");
+        methodSpecList.add(methodBuilder7.build());
 
         // 生成类
-        String clzName = MODEL_NAME_PRE + node.data.getSimpleName();
+        String clzName = node.data.getSimpleName() + MODEL_NAME_LAST;
         TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(clzName) // 类名
                 .addModifiers(Modifier.PUBLIC) // public修饰符
                 .addFields(fieldSpecList)
@@ -585,6 +602,121 @@ public class DiffProcessor extends AbstractProcessor {
         tempModelMap.put(node, new ClassBean(packageName, clzName));
     }
 
+    /**
+     * 创建所有工厂。
+     */
+    private void createAllFactoryFile() {
+        factoryType = elementTool.getTypeElement(TYPE_FACTORY);
+        helperType = elementTool.getTypeElement(TYPE_FACTORY_HELPER);
+        if (factoryType == null) {
+            error("没找到" + TYPE_FACTORY);
+        }
+        if (helperType == null) {
+            error("没找到" + TYPE_FACTORY_HELPER);
+        }
+        // 从每个叶子子类开始
+        for (ElementNode node : rootNodeSet) {
+            createFactoryFile(node);
+        }
+        try {
+            writeFactoryHelperFile();
+        } catch (IOException e) {
+            error(e.getMessage());
+        }
+    }
+
+    /**
+     * 创建工厂。
+     *
+     * @param node 信息
+     */
+    private void createFactoryFile(ElementNode node) {
+        if (node == null) return;
+        if (tempFactoryMap.get(node) != null) return;// 生成过了
+        // 优先生成父类的工厂文件
+        if (node.next != null) {
+            createFactoryFile(node.next);
+        }
+        try {
+            writeFactoryFile(node);
+        } catch (Exception e) {
+            error(e.getMessage());
+        }
+    }
+
+    /**
+     * 写代码。factory文件
+     *
+     * @param node 信息
+     */
+    private void writeFactoryFile(ElementNode node) throws IOException {
+        ClassBean cb = tempModelMap.get(node);
+        if (cb == null) {
+            error("一定是哪里出问题了3！");
+            return;
+        }
+        ClassName cn = ClassName.get(cb.packageName, cb.clzName);// model类型
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("create")
+                .addAnnotation(Override.class) // 重写注解 @Override
+                .addModifiers(Modifier.PUBLIC) // public修饰符
+                .returns(ClassName.get(modelType)) // 方法返回类型
+                .addStatement("return new $T()", cn);
+
+        // 生成类
+        String clzName = node.data.getSimpleName() + FACTORY_NAME_LAST;
+        TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(clzName) // 类名
+                .addModifiers(Modifier.PUBLIC) // public修饰符
+                .addSuperinterface(ClassName.get(factoryType))
+                .addMethod(methodBuilder.build());
+        // 生成类文件
+        String packageName = ClassName.get(node.data).packageName() + FACTORY_PACKAGE_LAST;
+        JavaFile.builder(packageName, typeBuilder.build())
+                .build() // JavaFile构建完成
+                .writeTo(filer); // 文件生成器开始生成类文件
+
+        tempFactoryMap.put(node, new ClassBean(packageName, clzName));
+    }
+
+    /**
+     * 写代码。factoryHelper文件
+     */
+    private void writeFactoryHelperFile() throws IOException {
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("createFactory")
+                .addAnnotation(Override.class) // 重写注解 @Override
+                .addModifiers(Modifier.PUBLIC) // public修饰符
+                .returns(ClassName.get(factoryType))
+                .addParameter(Object.class, "o");// 方法返回类型
+        Set<ElementNode> set = new HashSet<>();
+        // 从每个叶子子类开始
+        for (ElementNode node : rootNodeSet) {
+            ElementNode next = node;
+            while (next != null && !set.contains(next)) {
+                ClassName nodeCn = ClassName.get(next.data);
+                ClassBean cb = tempFactoryMap.get(next);
+                if (cb == null) {
+                    error("一定是哪里出问题了4！");
+                    return;
+                }
+                ClassName cn = ClassName.get(cb.packageName, cb.clzName);// model类型
+                methodBuilder
+                        .beginControlFlow("if ($N instanceof $T)", "o", nodeCn)
+                        .addStatement("return new $T()", cn)
+                        .endControlFlow();
+                set.add(next);
+                next = node.next;
+            }
+        }
+        methodBuilder.addStatement("return null");
+        // 生成类
+        TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(FACTORY_HELPER_NAME) // 类名
+                .addModifiers(Modifier.PUBLIC) // public修饰符
+                .addSuperinterface(ClassName.get(helperType))
+                .addMethod(methodBuilder.build());
+        // 生成类文件
+        JavaFile.builder(DIFF_API_PACKAGE, typeBuilder.build())
+                .build() // JavaFile构建完成
+                .writeTo(filer); // 文件生成器开始生成类文件
+    }
 
     private void note(String msg) {
         messager.printMessage(NOTE, msg + "; ");

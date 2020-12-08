@@ -13,8 +13,8 @@ import top.wzmyyj.diff_annotation.SameType;
  */
 public class YyModel {
 
-    @SameItem
-    public long id;
+//    @SameItem
+//    public long id;
 
     @SameContent
     public String title;

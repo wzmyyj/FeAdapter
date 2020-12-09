@@ -11,7 +11,7 @@ import top.wzmyyj.diff_annotation.SameType;
  */
 public class BbModel extends AaModel {
 
-    @SameType
+    @SameType("sb")
     public YyModel yy;
 
 }

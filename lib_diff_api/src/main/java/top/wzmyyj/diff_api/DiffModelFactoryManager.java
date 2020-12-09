@@ -38,14 +38,23 @@ public final class DiffModelFactoryManager {
 
     public static final int MAX_FACTORY_CACHE_SIZE = 50;
 
+    // 由于model种类不确定，可能很多，IDiffModelFactory时间复杂度不确定，因此做缓存工厂
     private final LruCache<Class<?>, IDiffModelFactory> cache = new LruCache<>(MAX_FACTORY_CACHE_SIZE);
+    // model子类和父类可能用的是同一个工厂
     private final Map<Class<?>, Class<?>> clazzMap = new HashMap<>();
 
+    // 正真创建工厂的对象
     private IDiffCreateFactoryHelper factoryHelper = null;
 
+    /**
+     * 获取工厂。
+     *
+     * @param model model对象
+     * @return 工厂
+     */
     @Nullable
-    public IDiffModelFactory getFactory(@NonNull Object o) {
-        Class<?> clazz = clazzMap.get(o.getClass());
+    public IDiffModelFactory getFactory(@NonNull Object model) {
+        Class<?> clazz = clazzMap.get(model.getClass());
         if (clazz != null) {
             IDiffModelFactory factory = cache.get(clazz);
             if (factory != null) {
@@ -61,8 +70,8 @@ public final class DiffModelFactoryManager {
             }
         }
         if (factoryHelper != null) {
-            IDiffModelFactory factory = factoryHelper.createFactory(o);
-            clazzMap.put(o.getClass(), factory.getClass());
+            IDiffModelFactory factory = factoryHelper.createFactory(model);
+            clazzMap.put(model.getClass(), factory.getClass());
             cache.put(factory.getClass(), factory);
             return factory;
         }

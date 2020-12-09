@@ -472,21 +472,20 @@ public class DiffProcessor extends AbstractProcessor {
                 .addModifiers(Modifier.PUBLIC) // public修饰符
                 .returns(boolean.class) // 方法返回类型
                 .addParameter(Object.class, "o")
-                .addStatement("$T $N = ($T) $N", nodeCn, "m", nodeCn, "o")
-                .addStatement("$T $N = $L", boolean.class, "s", node.sameItemCount > 0);
+                .addStatement("$T $N = ($T) $N", nodeCn, "m", nodeCn, "o");
         if (node.next != null && node.next.sameItemCount > 0) {
-            methodBuilder3.addStatement("$N &= super.isSameItem($N)", "s", "m");
+            methodBuilder3.addStatement("if (!super.isSameContent($N)) return false", "m");
         }
         for (VariableElement element : node.sameItemList) {
-            methodBuilder3.addStatement("$N &= $T.equals(this.$L,$N.$L)",
-                    "s", Objects.class, element.getSimpleName(), "m", element.getSimpleName());
+            methodBuilder3.addStatement("if (!$T.equals(this.$L,$N.$L)) return false",
+                    Objects.class, element.getSimpleName(), "m", element.getSimpleName());
         }
         for (VariableElement element : node.sameTypeMap.keySet()) {
             if (node.sameTypeMap.get(element).sameItemCount == 0) continue;
-            methodBuilder3.addStatement("$N &= this.$L.isSameItem($N.$L)",
-                    "s", element.getSimpleName(), "m", element.getSimpleName());
+            methodBuilder3.addStatement("if (!this.$L.isSameItem($N.$L)) return false",
+                    element.getSimpleName(), "m", element.getSimpleName());
         }
-        methodBuilder3.addStatement("return $N", "s");
+        methodBuilder3.addStatement("return $L", node.sameItemCount > 0);
         methodSpecList.add(methodBuilder3.build());
 
         // 方法4：isSameContent
@@ -495,21 +494,20 @@ public class DiffProcessor extends AbstractProcessor {
                 .addModifiers(Modifier.PUBLIC) // public修饰符
                 .returns(boolean.class) // 方法返回类型
                 .addParameter(Object.class, "o")
-                .addStatement("$T $N = ($T) $N", nodeCn, "m", nodeCn, "o")
-                .addStatement("$T $N = $L", boolean.class, "s", node.sameContentCount > 0);
+                .addStatement("$T $N = ($T) $N", nodeCn, "m", nodeCn, "o");
         if (node.next != null && node.next.sameContentCount > 0) {
-            methodBuilder4.addStatement("$N &= super.isSameContent($N)", "s", "m");
+            methodBuilder4.addStatement("if (!super.isSameContent($N)) return false", "m");
         }
         for (VariableElement element : node.sameContentList) {
-            methodBuilder4.addStatement("$N &= $T.equals(this.$L,$N.$L)",
-                    "s", Objects.class, element.getSimpleName(), "m", element.getSimpleName());
+            methodBuilder4.addStatement("if (!$T.equals(this.$L,$N.$L)) return false",
+                    Objects.class, element.getSimpleName(), "m", element.getSimpleName());
         }
         for (VariableElement element : node.sameTypeMap.keySet()) {
             if (node.sameTypeMap.get(element).sameContentCount == 0) continue;
-            methodBuilder4.addStatement("$N &= this.$L.isSameContent($N.$L)",
-                    "s", element.getSimpleName(), "m", element.getSimpleName());
+            methodBuilder4.addStatement("if (!this.$L.isSameContent($N.$L)) return false",
+                    element.getSimpleName(), "m", element.getSimpleName());
         }
-        methodBuilder4.addStatement("return $N", "s");
+        methodBuilder4.addStatement("return $L", node.sameContentCount > 0);
         methodSpecList.add(methodBuilder4.build());
 
         // 方法5：canHandle
@@ -555,21 +553,32 @@ public class DiffProcessor extends AbstractProcessor {
             methodBuilder7.addStatement("$T $N = new $T()",
                     ClassName.get(payloadType), "p", ClassName.get(payloadType));
         }
+        Set<String> keySet = new HashSet<>();
         for (VariableElement element : node.sameContentList) {
+            SameContent sc = element.getAnnotation(SameContent.class);
+            String key = EmptyUtils.isNullOrEmpty(sc.value()) ? element.getSimpleName().toString() : sc.value();
+            if (keySet.contains(key)) {
+                error("@SameContent 注解上的value有重复：" + node.data.getQualifiedName() + "$" + element.getSimpleName());
+            }
+            keySet.add(key);
             methodBuilder7
                     .beginControlFlow("if (!$T.equals(this.$L, $N.$L))",
                             Objects.class, element.getSimpleName(), "m", element.getSimpleName())
-                    .addStatement("$N.change.put($S, true)", "p", element.getSimpleName())
-                    .addStatement("$N.data.put($S, $N.$L)", "p", element.getSimpleName(), "m", element.getSimpleName())
+                    .addStatement("$N.put($S, $N.$L)", "p", key, "m", element.getSimpleName())
                     .endControlFlow();
         }
         for (VariableElement element : node.sameTypeMap.keySet()) {
             if (node.sameTypeMap.get(element).sameContentCount == 0) continue;
+            SameType st = element.getAnnotation(SameType.class);
+            String key = EmptyUtils.isNullOrEmpty(st.value()) ? element.getSimpleName().toString() : st.value();
+            if (keySet.contains(key)) {
+                error("@SameType 注解上的value有重复：" + node.data.getQualifiedName() + "$" + element.getSimpleName());
+            }
+            keySet.add(key);
             methodBuilder7
                     .beginControlFlow("if (!this.$L.isSameContent($N.$L))",
                             element.getSimpleName(), "m", element.getSimpleName())
-                    .addStatement("$N.change.put($S, true)", "p", element.getSimpleName())
-                    .addStatement("$N.data.put($S, $N.$L)", "p", element.getSimpleName(), "m", element.getSimpleName())
+                    .addStatement("$N.put($S, $N.$L)", "p", key, "m", element.getSimpleName())
                     .endControlFlow();
         }
         methodBuilder7.addStatement("return $N", "p");

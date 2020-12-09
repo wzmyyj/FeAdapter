@@ -19,13 +19,13 @@ public class XxModel {
     @SameContent
     public String name;
 
-    @SameContent
+    @SameContent("o1")
     public int count;
 
-    @SameContent
+    @SameContent("o")
     public boolean valid;
 
-    @SameType("hhhh")
+    @SameType()
     public YyModel yy;
 
 }

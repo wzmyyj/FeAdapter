@@ -68,13 +68,13 @@ abstract class RvAdapter<M : IVhModelType> : RecyclerView.Adapter<BindingViewHol
         return dataList
     }
 
-    override fun refreshItems(vararg items: M) {
+    override fun refreshItems(items: List<M>) {
         helper.compareItems(items, dataList) { l, c ->
             notifyItemRangeChanged(l, c)
         }
     }
 
-    override fun removeItems(vararg items: M) {
+    override fun removeItems(items: List<M>) {
         helper.compareItems(items, dataList) { l, c ->
             for (i in l until l + c) dataList.removeAt(i)
             notifyItemRangeRemoved(l, c)

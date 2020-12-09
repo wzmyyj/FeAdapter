@@ -77,7 +77,7 @@ abstract class DiffListAdapter<M : IVhModelType>(callback: DiffUtil.ItemCallback
     /**
      * Please do not use it with setList!
      */
-    override fun refreshItems(vararg items: M) {
+    override fun refreshItems(items: List<M>) {
         helper.compareItems(items, readOnlyList) { l, c ->
             notifyItemRangeChanged(l, c)
         }
@@ -86,7 +86,7 @@ abstract class DiffListAdapter<M : IVhModelType>(callback: DiffUtil.ItemCallback
     /**
      * Please do not use it with setList!
      */
-    override fun removeItems(vararg items: M) {
+    override fun removeItems(items: List<M>) {
         helper.compareItems(items, readOnlyList) { l, c ->
             for (i in l until l + c) readOnlyList.removeAt(i)
             notifyItemRangeRemoved(l, c)

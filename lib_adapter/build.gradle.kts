@@ -12,7 +12,7 @@ configure<com.github.panpf.bintray.publish.PublishExtension> {
     userOrg = "wzmyyj"
     groupId = "top.wzmyyj.adapter"
     artifactId = "adapter"
-    publishVersion = "1.0.0"
+    publishVersion = "1.0.1"
     desc = "DataBinding RecyclerView Adapter."
     website = "https://github.com/wzmyyj/FeAdapter"
 }

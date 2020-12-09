@@ -80,7 +80,7 @@ class RvAdapterHelper<M : IVhModelType>(private val adapter: IRvAdapter<M>) {
      * It doesn't matter if the middle one is changed.
      * Make sure the head and tail remain the same are OK.
      */
-    fun compareItems(items: Array<out M>, dataList: List<M>, notify: (Int, Int) -> Unit) {
+    fun compareItems(items: List<M>, dataList: List<M>, notify: (Int, Int) -> Unit) {
         items.forEach { m ->
             if (m is IVhModelWrapper<*>) {
                 val f = ArrayList<M>()

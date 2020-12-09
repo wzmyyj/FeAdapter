@@ -25,11 +25,11 @@ interface IRvAdapterMutable<M : IVhModelType> {
     /**
      * Refresh some items.
      */
-    fun refreshItems(vararg items: M)
+    fun refreshItems(items: List<M>)
 
     /**
      * Remove some items.
      */
-    fun removeItems(vararg items: M)
+    fun removeItems(items: List<M>)
 
 }

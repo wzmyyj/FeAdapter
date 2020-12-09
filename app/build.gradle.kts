@@ -23,7 +23,7 @@ dependencies {
     implementation(Dependencies.androidx_lifecycle_ext)
     implementation(Dependencies.androidx_lifecycle_java8)
 
-//    api(project(":lib_adapter"))
+    implementation(project(":lib_adapter"))
 
     implementation(project(":lib_diff_annotation"))
     implementation(project(":lib_diff_api"))

@@ -9,13 +9,14 @@ import androidx.databinding.ViewDataBinding
  * The unified management class of ViewTypeDelegate.
  *
  * @author feling
- * @version 1.0.0
+ * @version 1.0.1
  * @since 1.0.0
  * @see ViewTypeDelegate
  */
 class ViewTypeDelegateManager<M : IVhModelType> {
 
     private val mIVDs: SparseArray<ViewTypeDelegate<ViewDataBinding, M>> = SparseArray()
+    private val mIVD2s: SparseArray<ViewTypeDelegate2<ViewDataBinding, M>> = SparseArray()
 
     /**
      * When creating viewHolder. if VTD.getViewType() == viewType executes VTD.onCreateVH().
@@ -40,6 +41,19 @@ class ViewTypeDelegateManager<M : IVhModelType> {
     }
 
     /**
+     * When bind viewHolder. if VTD.getViewType() == model.viewType executes VTD.onBindVh().
+     *
+     * @param binding ViewDataBinding
+     * @param m model
+     * @param payload payload
+     * @return handle onBindViewHolder
+     */
+    internal fun onBindVH(binding: ViewDataBinding, m: M, payload: Any): Boolean {
+        if (mIVD2s.size() == 0) return false
+        return mIVD2s.get(m.getViewType())?.onBindVH(binding, m, payload) ?: false
+    }
+
+    /**
      * Add VTD into manager.
      *
      * @param ivd VTD
@@ -47,6 +61,9 @@ class ViewTypeDelegateManager<M : IVhModelType> {
     @Suppress("UNCHECKED_CAST")
     fun <X : ViewDataBinding, Y : M> add(ivd: ViewTypeDelegate<X, Y>) {
         mIVDs.put(ivd.getViewType(), ivd as ViewTypeDelegate<ViewDataBinding, M>)
+        if (ivd is ViewTypeDelegate2) {
+            mIVD2s.put(ivd.getViewType(), ivd as ViewTypeDelegate2<ViewDataBinding, M>)
+        }
     }
 
     /**

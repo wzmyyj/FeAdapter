@@ -4,10 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import top.wzmyyj.adapter.core.BindingViewHolder
-import top.wzmyyj.adapter.core.RvAdapterHelper
-import top.wzmyyj.adapter.core.IRvAdapter
-import top.wzmyyj.adapter.core.IRvAdapterMutable
+import top.wzmyyj.adapter.core.*
 
 /**
  * Created on 2020/10/22.
@@ -22,7 +19,7 @@ import top.wzmyyj.adapter.core.IRvAdapterMutable
  * @see RvAdapterHelper
  * @see IRvAdapter
  */
-abstract class DiffListAdapter<M : IDiffVhModelType>(callback: DiffCallBack<M>) :
+abstract class DiffListAdapter<M : IVhModelType>(callback: DiffUtil.ItemCallback<M>) :
     ListAdapter<M, BindingViewHolder>(callback), IRvAdapter<M>, IRvAdapterMutable<M> {
 
     private val helper by lazy { RvAdapterHelper(this) }
@@ -41,6 +38,15 @@ abstract class DiffListAdapter<M : IDiffVhModelType>(callback: DiffCallBack<M>) 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BindingViewHolder {
         return helper.onCreateViewHolder(parent, viewType)
+    }
+
+    override fun onBindViewHolder(
+        holder: BindingViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        if (helper.onBindViewHolder(holder, position, payloads)) return
+        super.onBindViewHolder(holder, position, payloads)
     }
 
     override fun onBindViewHolder(holder: BindingViewHolder, position: Int) {
@@ -84,25 +90,6 @@ abstract class DiffListAdapter<M : IDiffVhModelType>(callback: DiffCallBack<M>) 
         helper.compareItems(items, readOnlyList) { l, c ->
             for (i in l until l + c) readOnlyList.removeAt(i)
             notifyItemRangeRemoved(l, c)
-        }
-    }
-
-    open class DiffCallBack<N : IDiffVhModelType> : DiffUtil.ItemCallback<N>() {
-
-        override fun areItemsTheSame(oldItem: N, newItem: N): Boolean {
-            // Judge whether two items use the same item.
-            return newItem.areItemsTheSame(oldItem)
-        }
-
-        override fun areContentsTheSame(oldItem: N, newItem: N): Boolean {
-            // Judge whether the contents of two items are the same.
-            return newItem.areContentsTheSame(oldItem)
-        }
-
-        override fun getChangePayload(oldItem: N, newItem: N): Any? {
-            // Advanced usage, used to extract changes and refresh local variables accurately.
-            // Not for the time being.
-            return null
         }
     }
 

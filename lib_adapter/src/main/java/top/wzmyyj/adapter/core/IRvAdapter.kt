@@ -39,6 +39,11 @@ interface IRvAdapter<M : IVhModelType> {
     }
 
     /**
+     * hat to do after binding the viewHolder for all.
+     */
+    fun afterBindVH(binding: ViewDataBinding, m: M) {}
+
+    /**
      * Init ViewTypeDelegateManager. You can add VTDs.
      */
     fun initManager(manager: ViewTypeDelegateManager<M>) {}

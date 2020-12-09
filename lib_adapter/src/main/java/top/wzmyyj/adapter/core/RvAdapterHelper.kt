@@ -51,12 +51,27 @@ class RvAdapterHelper<M : IVhModelType>(private val adapter: IRvAdapter<M>) {
     /**
      * Called by RecyclerView to display the data at the specified position.
      */
+    fun onBindViewHolder(holder: BindingViewHolder, position: Int, payloads: List<Any?>): Boolean {
+        val payload = payloads.firstOrNull() ?: return false
+        val item = adapter.getModel(position) ?: return false
+        setFullSpan(holder, item)
+        if (ivdManager.onBindVH(holder.binding, item, payload)) {
+            adapter.afterBindVH(holder.binding, item)
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Called by RecyclerView to display the data at the specified position.
+     */
     fun onBindViewHolder(holder: BindingViewHolder, position: Int) {
         val item = adapter.getModel(position) ?: return
         setFullSpan(holder, item)
         adapter.onBindVHForAll(holder.binding, item)
         ivdManager.onBindVH(holder.binding, item)
         holder.binding.executePendingBindings()
+        adapter.afterBindVH(holder.binding, item)
     }
 
     /**

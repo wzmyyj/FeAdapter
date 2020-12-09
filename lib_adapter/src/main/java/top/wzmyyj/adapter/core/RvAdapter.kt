@@ -36,6 +36,15 @@ abstract class RvAdapter<M : IVhModelType> : RecyclerView.Adapter<BindingViewHol
         return helper.onCreateViewHolder(parent, viewType)
     }
 
+    override fun onBindViewHolder(
+        holder: BindingViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        if (helper.onBindViewHolder(holder, position, payloads)) return
+        super.onBindViewHolder(holder, position, payloads)
+    }
+
     override fun onBindViewHolder(holder: BindingViewHolder, position: Int) {
         helper.onBindViewHolder(holder, position)
     }

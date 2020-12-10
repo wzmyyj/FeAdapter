@@ -6,13 +6,15 @@ dependencies {
     implementation(Dependencies.androidx_recyclerview)
 }
 
-apply { plugin(PluginId.bintray_publish) }
+apply { plugin(PluginId.github_maven) }
+group = "com.github.wzmyyj"
+version = "1.0.1"
 
-configure<com.github.panpf.bintray.publish.PublishExtension> {
-    userOrg = "wzmyyj"
-    groupId = "top.wzmyyj.adapter"
-    artifactId = "adapter"
-    publishVersion = "1.0.1"
-    desc = "DataBinding RecyclerView Adapter."
-    website = "https://github.com/wzmyyj/FeAdapter"
-}
+//configure<com.github.panpf.bintray.publish.PublishExtension> {
+//    userOrg = "wzmyyj"
+//    groupId = "top.wzmyyj.adapter"
+//    artifactId = "adapter"
+//    publishVersion = "1.0.1"
+//    desc = "DataBinding RecyclerView Adapter."
+//    website = "https://github.com/wzmyyj/FeAdapter"
+//}

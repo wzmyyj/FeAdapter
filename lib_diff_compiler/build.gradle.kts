@@ -25,6 +25,11 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_7
 }
 
+apply { plugin(PluginId.github_maven) }
+group = "com.github.wzmyyj"
+version = "1.0.0"
+
+
 //apply { plugin(PluginId.bintray_publish) }
 //
 //configure<com.github.panpf.bintray.publish.PublishExtension> {

@@ -24,10 +24,15 @@ object PluginId {
     const val application = "com.android.application"
     const val library = "com.android.library"
     const val java_library = "java-library"
-//    const val bintray_publish = "com.github.panpf.bintray-publish"
+
+    //    const val bintray_publish = "com.github.panpf.bintray-publish"
     const val github_maven = "com.github.dcendents.android-maven"
 }
 
 object Classpath {
     const val github_maven_plugin = "com.github.dcendents:android-maven-gradle-plugin:2.1"
+}
+
+object Publish {
+    const val github_group = "com.github.wzmyyj"
 }

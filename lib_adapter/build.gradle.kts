@@ -7,7 +7,7 @@ dependencies {
 }
 
 apply { plugin(PluginId.github_maven) }
-group = "com.github.wzmyyj"
+group = Publish.github_group
 
 //configure<com.github.panpf.bintray.publish.PublishExtension> {
 //    userOrg = "wzmyyj"

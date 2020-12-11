@@ -21,7 +21,7 @@ open class XxModel {
     @SameContent("o1")
     var count = 0
 
-    @SameContent("valid1")
+    @SameContent
     var valid = false
 
     @SameType

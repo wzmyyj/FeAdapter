@@ -15,5 +15,5 @@ allprojects {
 ```
 app.build.gradle.kts
 ```
- implementation("com.github.wzmyyj.FeAdapter:lib_adapter:1.0.0")
+ implementation("com.github.wzmyyj.FeAdapter:lib_adapter:1.1.0-beta01")
 ```

@@ -8,7 +8,6 @@ dependencies {
 
 apply { plugin(PluginId.github_maven) }
 group = "com.github.wzmyyj"
-version = "1.0.1"
 
 //configure<com.github.panpf.bintray.publish.PublishExtension> {
 //    userOrg = "wzmyyj"

@@ -7,14 +7,6 @@ android {
     defaultConfig.applicationId = AppConfig.applicationId
     flavorDimensions("channel")
 
-    defaultConfig{
-        javaCompileOptions{
-            annotationProcessorOptions {
-                argument("moduleNameForDiffAPT","app")
-                argument("packageNameForDiffAPT",AppConfig.applicationId)
-            }
-        }
-    }
 }
 dependencies {
     implementation(Dependencies.androidx_coreKtx)
@@ -25,6 +17,6 @@ dependencies {
 
     implementation(project(":lib_adapter"))
 
-    implementation(project(":lib_diff_api"))
-    kapt2(project(":lib_diff_compiler"))
+    implementation("com.github.wzmyyj.FeDiff:lib_diff_api:1.1.0-beta03")
+    kapt2("com.github.wzmyyj.FeDiff:lib_diff_compiler:1.1.0-beta03")
 }

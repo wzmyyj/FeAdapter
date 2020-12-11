@@ -10,12 +10,12 @@
 
 object AppConfig {
     const val applicationId = "top.wzmyyj.feadapter"
-    const val versionName = "1.0.0"
+    const val versionName = "1.1.0"
 }
 
 object AndroidConfig {
     const val compileSdkVersion = 30
-    const val minSdkVersion = 21
+    const val minSdkVersion = 19
     const val targetSdkVersion = 30
     const val buildToolsVersion = "30.0.2"
 }

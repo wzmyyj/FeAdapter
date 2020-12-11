@@ -89,7 +89,7 @@ abstract class DiffListAdapter<M : IVhModelType>(callback: DiffUtil.ItemCallback
     override fun removeItems(items: List<M>) {
         helper.compareItems(items, readOnlyList) { l, c ->
             for (i in l until l + c) readOnlyList.removeAt(i)
-            notifyItemRangeRemoved(l, c)
+            submitList(ArrayList(readOnlyList))
         }
     }
 

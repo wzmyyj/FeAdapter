@@ -17,6 +17,6 @@ dependencies {
 
     implementation(project(":lib_adapter"))
 
-    implementation("com.github.wzmyyj.FeDiff:lib_diff_api:1.1.0-beta03")
-    kapt2("com.github.wzmyyj.FeDiff:lib_diff_compiler:1.1.0-beta03")
+    implementation("com.github.wzmyyj.FeDiff:lib_diff_api:1.1.0-beta04")
+    kapt2("com.github.wzmyyj.FeDiff:lib_diff_compiler:1.1.0-beta04")
 }

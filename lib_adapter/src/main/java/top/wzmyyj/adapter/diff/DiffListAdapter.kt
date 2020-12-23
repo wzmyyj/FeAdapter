@@ -5,6 +5,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import top.wzmyyj.adapter.core.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Created on 2020/10/22.
@@ -71,7 +73,7 @@ abstract class DiffListAdapter<M : IVhModelType>(callback: DiffUtil.ItemCallback
 
     override fun getList(): List<M> {
         // Just for read.
-        return readOnlyList
+        return Collections.unmodifiableList(readOnlyList)
     }
 
     /**
